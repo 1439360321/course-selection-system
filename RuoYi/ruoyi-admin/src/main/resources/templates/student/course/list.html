@@ -35,7 +35,7 @@ function selectCourse(cno, cname) {
     var msg = $.common.escapeHtml('确认选修 <b>' + cname + '</b>（' + sem + '）？');
     layer.confirm(msg, {btn: ['确认', '取消']}, function(idx) {
         layer.close(idx);
-        $.operate.save(ctx + "student/course/select", {sno:sno, cno:cno, semester:sem});
+        $.ajax({ type: "POST", url: ctx + "student/course/select", data: {sno:sno, cno:cno, semester:sem}, success: function(r) { if (r.code == web_status.SUCCESS) { $.modal.msgSuccess(r.msg); $.table.refresh(); } else { $.modal.alertError(r.msg); } } });
     });
 }
 </script></body></html>

@@ -67,4 +67,10 @@ public class CourseServiceImpl implements ICourseService
         }
         return true;
     }
+
+    @Override
+    public int selectEnrolledCount(String cno)
+    {
+        return courseMapper.selectEnrolledCount(cno);
+    }
 }

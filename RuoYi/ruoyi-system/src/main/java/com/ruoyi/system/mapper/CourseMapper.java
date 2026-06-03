@@ -18,4 +18,6 @@ public interface CourseMapper
     public Course checkCnoUnique(String cno);
 
     public Course checkCnameUnique(String cname);
+
+    public int selectEnrolledCount(String cno);
 }

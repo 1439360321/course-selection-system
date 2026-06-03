@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>测试学生列表接口</title>
+    <script src="http://localhost/js/jquery.min.js?v=3.7.1"></script>
+</head>
+<body>
+    <h1>测试学生列表接口</h1>
+    <button onclick="testStudents()">测试获取学生列表</button>
+    <div id="result"></div>
+
+    <script>
+        var ctx = '/';
+        
+        function testStudents() {
+            $.post(ctx + "teacher/course/students/list", {cno: "C001"}, function(data) {
+                console.log('响应数据:', data);
+                if (data.code == 0) {
+                    $('#result').html('成功获取 ' + data.total + ' 条学生记录');
+                } else {
+                    $('#result').html('失败: ' + data.msg);
+                }
+            }, 'json').fail(function(xhr, status, error) {
+                console.log('请求失败:', xhr, status, error);
+                $('#result').html('请求失败: ' + error);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -15,6 +15,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.system.domain.CourseSelection;
 import com.ruoyi.system.service.ICourseSelectionService;
 
@@ -36,7 +37,20 @@ public class CourseSelectionController extends BaseController
     @ResponseBody
     public TableDataInfo list(CourseSelection cs)
     {
-        return getDataTable(courseSelectionService.selectCourseSelectionList(cs));
+        String loginName = getLoginName();
+        
+        if (loginName != null && loginName.startsWith("T"))
+        {
+            startPage();
+            List<CourseSelection> list = courseSelectionService.selectCourseSelectionListByTeacher(loginName, cs);
+            return getDataTable(list);
+        }
+        else
+        {
+            startPage();
+            List<CourseSelection> list = courseSelectionService.selectCourseSelectionList(cs);
+            return getDataTable(list);
+        }
     }
 
     @RequiresPermissions("admin:courseselection:edit")
@@ -53,7 +67,18 @@ public class CourseSelectionController extends BaseController
     @ResponseBody
     public AjaxResult editSave(CourseSelection cs)
     {
-        return toAjax(courseSelectionService.updateCourseSelection(cs));
+        try
+        {
+            return toAjax(courseSelectionService.updateCourseSelection(cs));
+        }
+        catch (IllegalArgumentException e)
+        {
+            return error(e.getMessage());
+        }
+        catch (Exception e)
+        {
+            return error("成绩更新失败：" + e.getMessage());
+        }
     }
 
     @Log(title = "选课记录", businessType = BusinessType.DELETE)
@@ -62,7 +87,14 @@ public class CourseSelectionController extends BaseController
     @ResponseBody
     public AjaxResult remove(String ids)
     {
-        String[] arr = ids.split(",");
-        return toAjax(courseSelectionService.deleteCourseSelectionById(arr[0], arr[1]));
+        try
+        {
+            String[] arr = ids.split(",");
+            return toAjax(courseSelectionService.deleteCourseSelectionById(arr[0], arr[1]));
+        }
+        catch (Exception e)
+        {
+            return error("删除失败：" + e.getMessage());
+        }
     }
 }

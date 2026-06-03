@@ -1622,6 +1622,10 @@ var table = {
                 }
                 return value.toString().replace(/(^\s*)|(\s*$)|\r|\n/g, "");
             },
+            escapeHtml: function (value) {
+                if (!value) return "";
+                return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            },
             // 比较两个字符串（大小写敏感）
             equals: function (str, that) {
                 return str == that;

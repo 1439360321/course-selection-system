@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('统计分析')" /></head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tab-enroll">选课统计</a></li>
+                    <li><a data-toggle="tab" href="#tab-fail">不及格名单</a></li>
+                    <li><a data-toggle="tab" href="#tab-grades">成绩排名</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab-enroll" class="tab-pane active">
+                        <div class="row"><div class="col-sm-12 select-table table-striped"><table id="enroll-table"></table></div></div>
+                    </div>
+                    <div id="tab-fail" class="tab-pane">
+                        <div class="row"><div class="col-sm-12 select-table table-striped"><table id="fail-table"></table></div></div>
+                    </div>
+                    <div id="tab-grades" class="tab-pane">
+                        <div class="row">
+                            <div class="col-sm-12 search-collapse">
+                                <form id="grade-form">
+                                    <div class="select-list"><ul>
+                                        <li>学号: <input type="text" id="sno-input" placeholder="输入学号查询"/></li>
+                                        <li><a class="btn btn-primary btn-sm" onclick="queryGrades()">查询</a></li>
+                                    </ul></div>
+                                </form>
+                            </div>
+                            <div class="col-sm-12 select-table table-striped">
+                                <table id="grade-table"></table>
+                                <div id="gpa-display" style="margin-top:15px;font-size:16px;font-weight:bold;color:#e10e1e;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script>
+$(function() {
+    var enrollOptions = {
+        url: ctx + "admin/statistics/enrollment",
+        createUrl: undefined, updateUrl: undefined, removeUrl: undefined, search: false,
+        modalName: "选课统计", uniqueId: "cno",
+        columns: [
+            {field:"cno",title:"课程号"},
+            {field:"cname",title:"课程名"},
+            {field:"credit",title:"学分"},
+            {field:"deptName",title:"开课院系"},
+            {field:"teacherName",title:"授课教师"},
+            {field:"semester",title:"学期"},
+            {field:"enrolledCount",title:"选课人数"},
+            {field:"avgScore",title:"平均分",formatter:function(v){return v && v != null ? Number(v).toFixed(1) : '-';}}
+        ]
+    };
+    $("#enroll-table").bootstrapTable("destroy").bootstrapTable(enrollOptions);
+
+    var failOptions = {
+        url: ctx + "admin/statistics/fail",
+        createUrl: undefined, updateUrl: undefined, removeUrl: undefined, search: false,
+        modalName: "不及檡名单", uniqueId: "sno",
+        columns: [
+            {field:"sno",title:"学号"},
+            {field:"sname",title:"姓名"},
+            {field:"cno",title:"课程号"},
+            {field:"cname",title:"课程名"},
+            {field:"semester",title:"学期"},
+            {field:"normalScore",title:"平时成绩"},
+            {field:"testScore",title:"考试成绩"},
+            {field:"totalScore",title:"总评",formatter:function(v){return v && v != null ? Number(v).toFixed(1) : '-';}}
+        ]
+    };
+    $("#fail-table").bootstrapTable("destroy").bootstrapTable(failOptions);
+});
+
+function queryGrades() {
+    var sno = document.getElementById("sno-input").value;
+    if (!sno) return;
+    var gradeOptions = {
+        url: ctx + "admin/statistics/grades",
+        createUrl: undefined, updateUrl: undefined, removeUrl: undefined, search: false,
+        modalName: "成绩排名", uniqueId: "cno",
+        queryParams: function(params) { return {pageSize: params.limit, pageNum: params.offset / params.limit + 1, sno: sno}; },
+        columns: [
+            {field:"cno",title:"课程号"},
+            {field:"cname",title:"课程名"},
+            {field:"credit",title:"学分"},
+            {field:"semester",title:"学期"},
+            {field:"normalScore",title:"平时成绩"},
+            {field:"testScore",title:"考试成绩"},
+            {field:"totalScore",title:"总评",formatter:function(v){return v && v != null ? Number(v).toFixed(1) : '-';}},
+            {field:"gradePoint",title:"绩点",formatter:function(v){return v && v != null ? Number(v).toFixed(1) : '-';}}
+        ]
+    };
+    $("#grade-table").bootstrapTable("destroy").bootstrapTable(gradeOptions);
+    $.get(ctx + "admin/statistics/gpa", {sno:sno}, function(r) {
+        if (r.code == 0) {
+            document.getElementById("gpa-display").innerHTML = "平均纣点(GPA)：" + Number(r.gpa).toFixed(2);
+        }
+    });
+}
+</script></body></html>

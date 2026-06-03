@@ -14,6 +14,10 @@ public class Course
     private Integer deptId;
     private String adminId;
     private String deptName;
+    private Integer maxStudents;
+
+    public Integer getMaxStudents() { return maxStudents; }
+    public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }
 
     public String getCno() { return cno; }
     public void setCno(String cno) { this.cno = cno; }

@@ -27,6 +27,21 @@
         order by cs.sno, cs.cno
     </select>
 
+    <select id="selectCourseSelectionListByTeacher" parameterType="map" resultMap="CourseSelectionResult">
+        select cs.sno, cs.cno, cs.semester, cs.normal_score, cs.test_score, s.sname, c.cname, CONCAT(cs.sno, '-', cs.cno) as id
+        from courseselection cs 
+        left join student s on cs.sno = s.sno 
+        left join course c on cs.cno = c.cno
+        left join class cl on c.cno = cl.cno
+        <where>
+            cl.tno = #{tno}
+            <if test="sno != null and sno != ''">and cs.sno like concat('%', #{sno}, '%')</if>
+            <if test="cno != null and cno != ''">and cs.cno like concat('%', #{cno}, '%')</if>
+            <if test="semester != null and semester != ''">and cs.semester like concat('%', #{semester}, '%')</if>
+        </where>
+        order by cs.sno, cs.cno
+    </select>
+
     <select id="selectCourseSelectionById" resultMap="CourseSelectionResult">
         <include refid="selectCSVo"/> where cs.sno = #{param1} and cs.cno = #{param2}
     </select>
@@ -62,4 +77,32 @@
     <delete id="deleteCourseSelectionById">
         delete from courseselection where sno = #{param1} and cno = #{param2}
     </delete>
+
+    <select id="callSpStudentGpa" statementType="CALLABLE" parameterType="map">
+        {call sp_student_gpa(#{sno, mode=IN, jdbcType=CHAR}, #{gpa, mode=OUT, jdbcType=DECIMAL})}
+    </select>
+
+    <select id="selectCourseEnrollmentList" resultType="map">
+        select cno as "cno", cname as "cname", credit as "credit", course_type as "courseType", dept_name as "deptName", teacher_name as "teacherName", class_time as "classTime", semester as "semester", enrolled_count as "enrolledCount", avg_score as "avgScore" from v_course_enrollment order by cno
+    </select>
+
+    <select id="selectFailStudentList" resultType="map">
+        select sno as "sno", sname as "sname", cno as "cno", cname as "cname", semester as "semester", normal_score as "normalScore", test_score as "testScore", total_score as "totalScore" from v_fail_students order by sno
+    </select>
+
+    <select id="selectStudentGradeList" parameterType="map" resultType="map">
+        select sno as "sno", sname as "sname", cno as "cno", cname as "cname", credit as "credit", semester as "semester", normal_score as "normalScore", test_score as "testScore", total_score as "totalScore", grade_point as "gradePoint" from v_student_grades
+        <where>
+            <if test="sno != null and sno != ''">and sno = #{sno}</if>
+        </where>
+        order by semester, cno
+    </select>
+
+    <select id="selectTeacherScheduleList" resultType="map">
+        select tno as "tno", tname as "tname", cno as "cno", cname as "cname", semester as "semester", class_time as "classTime", dept_name as "deptName" from v_teacher_schedule where tno = #{tno} order by semester, cno
+    </select>
+
+    <select id="selectCountBySnoAndCno" resultType="int">
+        select count(*) from courseselection where sno = #{sno} and cno = #{cno}
+    </select>
 </mapper>

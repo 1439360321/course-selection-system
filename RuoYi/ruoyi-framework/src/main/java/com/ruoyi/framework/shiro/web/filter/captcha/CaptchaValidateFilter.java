@@ -19,7 +19,7 @@ public class CaptchaValidateFilter extends AccessControlFilter
     /**
      * 是否开启验证码
      */
-    private boolean captchaEnabled = true;
+    private boolean captchaEnabled = false;
 
     /**
      * 验证码类型
@@ -73,7 +73,6 @@ public class CaptchaValidateFilter extends AccessControlFilter
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception
     {
-        request.setAttribute(ShiroConstants.CURRENT_CAPTCHA, ShiroConstants.CAPTCHA_ERROR);
         return true;
     }
 }

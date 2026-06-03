@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head><th:block th:include="include :: header('成绩查询')" /></head>
-<body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12 select-table table-striped"><table id="bootstrap-table"></table></div></div></div>
+<body class="gray-bg"><div class="container-div"><div id="gpa-section" style="text-align:right;font-size:20px;font-weight:bold;color:#e7505a;margin-bottom:10px;background:#f9f9f9;padding:8px 15px;border-radius:4px;"></div><div class="row"><div class="col-sm-12 select-table table-striped"><table id="bootstrap-table"></table></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
 var sno = new URLSearchParams(window.location.search).get("sno") || "2021001001";
@@ -14,5 +14,6 @@ $(function() {
         columns: [{field:'cno',title:'课程号'},{field:'cname',title:'课程名'},{field:'semester',title:'学期'},{field:'normalScore',title:'平时成绩'},{field:'testScore',title:'考试成绩'},{field:'total',title:'总评',formatter:function(v,r){if (r.normalScore && r.testScore) return (r.normalScore*0.4+r.testScore*0.6).toFixed(1);return '-';}}]
     };
     $.table.init(options);
+    $.get(ctx + "student/gpa", {sno:sno}, function(r) { if (r.code == 0) { document.getElementById("gpa-section").innerHTML = "平均绩点(GPA)：" + r.gpa.toFixed(2); } });
 });
 </script></body></html>

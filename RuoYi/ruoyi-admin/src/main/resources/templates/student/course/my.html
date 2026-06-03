@@ -17,7 +17,7 @@ $(function() {
 });
 function dropCourse(cno) {
     $.modal.confirm("确定要退选该课程吗？", function() {
-        $.operate.remove(ctx + "student/course/drop", {sno:sno, cno:cno});
+        $.ajax({ type: "POST", url: ctx + "student/course/drop", data: {sno:sno, cno:cno}, success: function(r) { if (r.code == web_status.SUCCESS) { $.modal.msgSuccess(r.msg); $.table.refresh(); } else { $.modal.alertError(r.msg); } } });
     });
 }
 </script></body></html>

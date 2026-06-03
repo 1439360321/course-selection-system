@@ -65,6 +65,21 @@ public class TeacherBusinessController extends BaseController
     @ResponseBody
     public TableDataInfo studentsList(String cno)
     {
+        // 获取当前登录教师的工号
+        String currentTno = getLoginName();
+        System.out.println("DEBUG: currentTno = " + currentTno + ", cno = " + cno);
+        
+        // 验证该课程是否由当前教师教授
+        Class clazz = classService.selectClassById(currentTno, cno);
+        System.out.println("DEBUG: clazz = " + (clazz != null ? clazz.getTno() + "-" + clazz.getCno() : "null"));
+        
+        if (clazz == null)
+        {
+            // 如果课程不存在或不是当前教师教授的，返回空数据
+            System.out.println("DEBUG: 课程不属于当前教师，返回空数据");
+            return getDataTable(new java.util.ArrayList<>());
+        }
+        
         CourseSelection cs = new CourseSelection();
         cs.setCno(cno);
         return getDataTable(courseSelectionService.selectCourseSelectionList(cs));
@@ -74,6 +89,17 @@ public class TeacherBusinessController extends BaseController
     @ResponseBody
     public AjaxResult gradeSave(CourseSelection cs)
     {
-        return toAjax(courseSelectionService.updateCourseSelection(cs));
+        try
+        {
+            return toAjax(courseSelectionService.updateCourseSelection(cs));
+        }
+        catch (IllegalArgumentException e)
+        {
+            return error(e.getMessage());
+        }
+        catch (Exception e)
+        {
+            return error("成绩保存失败：" + e.getMessage());
+        }
     }
 }

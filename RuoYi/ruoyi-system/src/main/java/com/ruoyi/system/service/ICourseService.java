@@ -18,4 +18,6 @@ public interface ICourseService
     public boolean checkCnoUnique(Course course);
 
     public boolean checkCnameUnique(Course course);
+
+    public int selectEnrolledCount(String cno);
 }
