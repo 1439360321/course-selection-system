@@ -7,21 +7,20 @@
 <div class="col-sm-4"><div class="ibox"><div class="ibox-title"><h5>教师信息</h5></div>
 <div class="ibox-content" id="info-box"><p>加载中...</p></div></div></div>
 <div class="col-sm-8"><div class="ibox"><div class="ibox-title"><h5>教授课程</h5></div>
-<div class="ibox-content"><table id="bootstrap-table"></table></div></div></div></div></div>
+<div class="ibox-content"><table id="bootstrap-table"></table>
+<div style="text-align:right;margin-top:8px"><a class="btn btn-primary" th:href="@{/teacher/schedule(tno=${param.tno})}">我的课表</a> <a class="btn btn-info" th:href="@{/teacher/statistics(tno=${param.tno})}">成绩统计</a></div>
+</div></div></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
-var tno = new URLSearchParams(window.location.search).get("tno") || "T2021001";
+var tno = [[${param.tno != null ? param.tno : 'T2021001'}]];
 $(function() {
     $.ajax({url: ctx + "teacher/info", type: "post", data: {tno: tno}, success: function(r) {
         if (r.code == 0 && r.data) { var d = r.data; $("#info-box").html("<p>教师号："+d.tno+"</p><p>姓名："+d.tname+"</p><p>职称："+(d.rank||'')+"</p>"); }
     }});
     var options = {
         url: ctx + "teacher/course/list",
-        createUrl: undefined,
-        updateUrl: undefined,
-        removeUrl: undefined,
-        modalName: "课程",
-        uniqueId: "cno",
+        createUrl: undefined, updateUrl: undefined, removeUrl: undefined,
+        modalName: "课程", uniqueId: "cno",
         queryParams: function(params) {
             return {pageSize: params.limit, pageNum: params.offset / params.limit + 1, tno: tno};
         },
@@ -30,9 +29,20 @@ $(function() {
             {field:'cname',title:'课程名'},
             {field:'semester',title:'学期'},
             {field:'classTime',title:'上课时间'},
+            {field:'examTime',title:'考试时间',formatter:function(v,r){return (v||'未设置')+' <a class="btn btn-warning btn-xs edit-exam-btn" href="#" data-cno="'+r.cno+'" data-time="'+(v||'')+'">改</a>';}},
             {title:'操作',formatter:function(v,r){return '<a class="btn btn-primary btn-xs" href="'+ctx+'teacher/course/students?tno='+tno+'&cno='+r.cno+'">查看学生</a>';}}
         ]
     };
     $.table.init(options);
+    $('body').on('click', '.edit-exam-btn', function(e) {
+        e.preventDefault();
+        var cno = $(this).data('cno');
+        var oldTime = $(this).data('time');
+        layer.prompt({title: '修改考试时间', formType: 0, value: oldTime, area: ['400px']}, function(val, index){
+            $.ajax({type:"POST", url:ctx+"teacher/exam/save", data:{tno:tno, cno:cno, examTime:val}, success:function(r){
+                if(r.code==web_status.SUCCESS){layer.close(index);$.modal.msgSuccess(r.msg);$.table.refresh();}else{$.modal.alertError(r.msg);}
+            }});
+        });
+    });
 });
 </script></body></html>

@@ -20,4 +20,8 @@ public interface ICourseSelectionService
     public List<Map<String, Object>> selectFailStudentStats();
     public List<Map<String, Object>> selectStudentGradeStats(String sno);
     public List<Map<String, Object>> selectTeacherScheduleStats(String tno);
+
+    public List<Map<String, Object>> selectTeacherGradeStats(String tno);
+
+    public List<Map<String, Object>> selectStudentSchedule(String sno);
 }

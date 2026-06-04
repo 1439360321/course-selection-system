@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('考试时间')" /></head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+var sno = new URLSearchParams(window.location.search).get("sno") || "";
+$(function() {
+    var options = {
+        url: ctx + "student/schedule/list",
+        createUrl: undefined, updateUrl: undefined, removeUrl: undefined,
+        modalName: "考试", uniqueId: "cno",
+        queryParams: function(params) {
+            return {pageSize: params.limit, pageNum: params.offset / params.limit + 1, sno: sno};
+        },
+        columns: [
+            {field:'cno',title:'课程号'},
+            {field:'cname',title:'课程名'},
+            {field:'credit',title:'学分'},
+            {field:'examTime',title:'考试时间'},
+            {field:'semester',title:'学期'}
+        ]
+    };
+    $.table.init(options);
+});
+</script></body></html>

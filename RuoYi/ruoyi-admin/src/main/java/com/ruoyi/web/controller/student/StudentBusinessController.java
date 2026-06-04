@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.student;
 
+import java.util.List;
+import java.util.Map;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.system.domain.Course;
 import com.ruoyi.system.domain.CourseSelection;
 import com.ruoyi.system.domain.Student;
 import com.ruoyi.system.service.ICourseService;
@@ -29,16 +32,22 @@ public class StudentBusinessController extends BaseController
     private IStudentService studentService;
 
     @GetMapping("/index")
-    public String index() { return "student/index"; }
+    public String index()
+    {
+        return "student/index";
+    }
 
     @GetMapping("/course")
-    public String course() { return "student/course/list"; }
+    public String course()
+    {
+        return "student/course/list";
+    }
 
     @PostMapping("/course/list")
     @ResponseBody
-    public TableDataInfo courseList()
+    public TableDataInfo courseList(Course course)
     {
-        return getDataTable(courseService.selectCourseList(null));
+        return getDataTable(courseService.selectCourseList(course));
     }
 
     @PostMapping("/course/select")
@@ -55,24 +64,27 @@ public class StudentBusinessController extends BaseController
         }
         catch (org.springframework.dao.DataIntegrityViolationException e)
         {
-            return error("选课失败：该课程已选择，不能重复选课");
+            return error("The course has been selected, cannot repeat");
         }
         catch (IllegalArgumentException e)
         {
-            return error("选课失败：" + e.getMessage());
+            return error("Selection failed: " + e.getMessage());
         }
         catch (org.springframework.dao.DataAccessException e)
         {
-            return error("选课失败：课程容量已满，无法选课");
+            return error("Course capacity full, cannot select");
         }
         catch (Exception e)
         {
-            return error("选课失败：" + e.getMessage());
+            return error("Selection failed: " + e.getMessage());
         }
     }
 
     @GetMapping("/course/my")
-    public String myCourse() { return "student/course/my"; }
+    public String myCourse()
+    {
+        return "student/course/my";
+    }
 
     @PostMapping("/course/my/list")
     @ResponseBody
@@ -99,24 +111,31 @@ public class StudentBusinessController extends BaseController
     }
 
     @GetMapping("/grade")
-    public String grade() { return "student/grade/list"; }
+    public String grade()
+    {
+        return "student/grade/list";
+    }
 
     @GetMapping("/gpa")
     @ResponseBody
     public AjaxResult gpa(String sno)
     {
-        try {
+        try
+        {
             java.math.BigDecimal gpa = courseSelectionService.getStudentGpa(sno);
             return success().put("gpa", gpa);
-        } catch (Exception e) {
-            // Fallback: calculate GPA from grades
+        }
+        catch (Exception e)
+        {
             CourseSelection cs = new CourseSelection();
             cs.setSno(sno);
             java.util.List<CourseSelection> list = courseSelectionService.selectCourseSelectionList(cs);
             double totalPoints = 0;
             double totalCredits = 0;
-            for (CourseSelection item : list) {
-                if (item.getNormalScore() != null && item.getTestScore() != null) {
+            for (CourseSelection item : list)
+            {
+                if (item.getNormalScore() != null && item.getTestScore() != null)
+                {
                     double total = item.getNormalScore().doubleValue() * 0.4 + item.getTestScore().doubleValue() * 0.6;
                     double gp = 0;
                     if (total >= 90) gp = 4.0;
@@ -128,9 +147,9 @@ public class StudentBusinessController extends BaseController
                     else if (total >= 68) gp = 2.0;
                     else if (total >= 64) gp = 1.5;
                     else if (total >= 60) gp = 1.0;
-                    // Get credit from course
-                    com.ruoyi.system.domain.Course course = courseService.selectCourseById(item.getCno());
-                    if (course != null) {
+                    Course course = courseService.selectCourseById(item.getCno());
+                    if (course != null)
+                    {
                         totalPoints += gp * course.getCredit().doubleValue();
                         totalCredits += course.getCredit().doubleValue();
                     }
@@ -149,4 +168,21 @@ public class StudentBusinessController extends BaseController
         cs.setSno(sno);
         return getDataTable(courseSelectionService.selectCourseSelectionList(cs));
     }
+
+    @GetMapping("/schedule")
+    public String schedule()
+    {
+        return "student/schedule";
+    }
+
+    @PostMapping("/schedule/list")
+    @ResponseBody
+    public TableDataInfo scheduleList(String sno)
+    {
+        List<Map<String, Object>> list = courseSelectionService.selectStudentSchedule(sno);
+        return getDataTable(list);
+    }
+    @GetMapping("/exam")
+    public String exam() { return "student/exam"; }
+
 }

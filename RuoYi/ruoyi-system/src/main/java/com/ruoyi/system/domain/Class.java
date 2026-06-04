@@ -9,6 +9,7 @@ public class Class
     private String cno;
     private String semester;
     private String classTime;
+    private String examTime;
     private String adminId;
     private String tname;
     private String cname;
@@ -16,22 +17,18 @@ public class Class
 
     public String getTno() { return tno; }
     public void setTno(String tno) { this.tno = tno; }
-
     public String getCno() { return cno; }
     public void setCno(String cno) { this.cno = cno; }
-
     public String getSemester() { return semester; }
     public void setSemester(String semester) { this.semester = semester; }
-
     public String getClassTime() { return classTime; }
     public void setClassTime(String classTime) { this.classTime = classTime; }
-
+    public String getExamTime() { return examTime; }
+    public void setExamTime(String examTime) { this.examTime = examTime; }
     public String getAdminId() { return adminId; }
     public void setAdminId(String adminId) { this.adminId = adminId; }
-
     public String getTname() { return tname; }
     public void setTname(String tname) { this.tname = tname; }
-
     public String getCname() { return cname; }
     public void setCname(String cname) { this.cname = cname; }
     public String getId() { return id; }
@@ -44,7 +41,10 @@ public class Class
             .append("cno", getCno())
             .append("semester", getSemester())
             .append("classTime", getClassTime())
+            .append("examTime", getExamTime())
             .append("adminId", getAdminId())
+            .append("tname", getTname())
+            .append("cname", getCname())
             .toString();
     }
 }

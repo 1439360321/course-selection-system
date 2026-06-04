@@ -30,4 +30,10 @@ public interface CourseSelectionMapper
     public List<Map<String, Object>> selectStudentGradeList(Map<String, Object> params);
 
     public List<Map<String, Object>> selectTeacherScheduleList(String tno);
+
+
+    public List<Map<String, Object>> selectTeacherGradeStats(String tno);
+
+
+    public List<Map<String, Object>> selectStudentSchedule(String sno);
 }

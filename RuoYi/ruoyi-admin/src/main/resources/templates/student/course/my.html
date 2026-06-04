@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head><th:block th:include="include :: header('我的选课')" /></head>
-<body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12 select-table table-striped"><table id="bootstrap-table"></table></div></div></div>
+<body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12" style="margin-bottom:10px"><a class="btn btn-info btn-xs" href="#" onclick="window.location.href=ctx+'/student/schedule?sno='+sno">我的课表</a> <a class="btn btn-success btn-xs" href="#" onclick="window.location.href=ctx+'/student/grade?sno='+sno">成绩查询</a> <a class="btn btn-warning btn-xs" href="#" onclick="window.location.href=ctx+'/student/course?sno='+sno">可选课程</a></div><div class="col-sm-12 select-table table-striped"><table id="bootstrap-table"></table></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
 var sno = new URLSearchParams(window.location.search).get("sno") || "2021001001";

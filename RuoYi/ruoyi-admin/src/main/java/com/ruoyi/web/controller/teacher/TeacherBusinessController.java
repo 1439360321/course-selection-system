@@ -1,5 +1,16 @@
 package com.ruoyi.web.controller.teacher;
 
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,16 +36,24 @@ public class TeacherBusinessController extends BaseController
 {
     @Autowired
     private IClassService classService;
+
     @Autowired
     private ICourseSelectionService courseSelectionService;
+
     @Autowired
     private ITeacherService teacherService;
 
     @GetMapping("/index")
-    public String index() { return "teacher/index"; }
+    public String index()
+    {
+        return "teacher/index";
+    }
 
     @GetMapping("/course")
-    public String course() { return "teacher/course/list"; }
+    public String course()
+    {
+        return "teacher/course/list";
+    }
 
     @PostMapping("/info")
     @ResponseBody
@@ -65,21 +84,12 @@ public class TeacherBusinessController extends BaseController
     @ResponseBody
     public TableDataInfo studentsList(String cno)
     {
-        // 获取当前登录教师的工号
         String currentTno = getLoginName();
-        System.out.println("DEBUG: currentTno = " + currentTno + ", cno = " + cno);
-        
-        // 验证该课程是否由当前教师教授
         Class clazz = classService.selectClassById(currentTno, cno);
-        System.out.println("DEBUG: clazz = " + (clazz != null ? clazz.getTno() + "-" + clazz.getCno() : "null"));
-        
         if (clazz == null)
         {
-            // 如果课程不存在或不是当前教师教授的，返回空数据
-            System.out.println("DEBUG: 课程不属于当前教师，返回空数据");
-            return getDataTable(new java.util.ArrayList<>());
+            return getDataTable(new ArrayList<>());
         }
-        
         CourseSelection cs = new CourseSelection();
         cs.setCno(cno);
         return getDataTable(courseSelectionService.selectCourseSelectionList(cs));
@@ -99,7 +109,87 @@ public class TeacherBusinessController extends BaseController
         }
         catch (Exception e)
         {
-            return error("成绩保存失败：" + e.getMessage());
+            return error("Grade save failed: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/schedule")
+    public String schedule()
+    {
+        return "teacher/schedule";
+    }
+
+    @GetMapping("/statistics")
+    public String statistics()
+    {
+        return "teacher/statistics";
+    }
+
+    @PostMapping("/statistics/list")
+    @ResponseBody
+    public TableDataInfo statisticsList(String tno)
+    {
+        List<Map<String, Object>> list = courseSelectionService.selectTeacherGradeStats(tno);
+        return getDataTable(list);
+    }
+
+    @GetMapping("/course/students/export")
+    public void exportStudents(String cno, HttpServletResponse response)
+    {
+        try
+        {
+            CourseSelection cs = new CourseSelection();
+            cs.setCno(cno);
+            List<CourseSelection> list = courseSelectionService.selectCourseSelectionList(cs);
+
+            Workbook wb = new XSSFWorkbook();
+            Sheet sheet = wb.createSheet("学生名单");
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("学号");
+            header.createCell(1).setCellValue("姓名");
+            header.createCell(2).setCellValue("平时成绩");
+            header.createCell(3).setCellValue("考试成绩");
+            header.createCell(4).setCellValue("总评");
+
+            int rowIdx = 1;
+            for (CourseSelection item : list)
+            {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(item.getSno());
+                row.createCell(1).setCellValue(item.getSname());
+                if (item.getNormalScore() != null) row.createCell(2).setCellValue(item.getNormalScore().doubleValue());
+                if (item.getTestScore() != null) row.createCell(3).setCellValue(item.getTestScore().doubleValue());
+                if (item.getNormalScore() != null && item.getTestScore() != null)
+                {
+                    double total = item.getNormalScore().doubleValue() * 0.4 + item.getTestScore().doubleValue() * 0.6;
+                    row.createCell(4).setCellValue(Math.round(total * 10.0) / 10.0);
+                }
+            }
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode("学生名单_" + cno + ".xlsx", StandardCharsets.UTF_8));
+            OutputStream os = response.getOutputStream();
+            wb.write(os);
+            wb.close();
+            os.flush();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @PostMapping("/exam/save")
+    @ResponseBody
+    public AjaxResult examSave(String tno, String cno, String examTime)
+    {
+        Class clazz = classService.selectClassById(tno, cno);
+        if (clazz == null)
+        {
+            return error("授课记录不存在");
+        }
+        clazz.setExamTime(examTime);
+        classService.updateClass(clazz);
+        return success("考试时间已更新");
     }
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -14,10 +14,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="adminId"    column="admin_id"   />
         <result property="deptName"   column="dept_name"  />
         <result property="maxStudents" column="max_students"/>
+        <result property="enrolledCount" column="enrolled_count"/>
     </resultMap>
 
     <sql id="selectCourseVo">
-        select c.cno, c.cname, c.credit, c.hours, c.course_type, c.dept_id, c.admin_id, d.dept_name, c.max_students
+        select c.cno, c.cname, c.credit, c.hours, c.course_type, c.dept_id, c.admin_id, d.dept_name, c.max_students, (select count(*) from courseselection cs2 where cs2.cno = c.cno) as enrolled_count
         from course c left join department d on c.dept_id = d.dept_id
     </sql>
 
@@ -30,6 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cname != null and cname != ''">
                 and c.cname like concat('%', #{cname}, '%')
             </if>
+            <if test="courseType != null"> and c.course_type = #{courseType}</if> 
             <if test="deptId != null and deptId != 0">
                 and c.dept_id = #{deptId}
             </if>
@@ -96,3 +98,5 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 </mapper>
+
+

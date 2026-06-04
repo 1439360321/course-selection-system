@@ -1,4 +1,4 @@
-package com.ruoyi.system.service.impl;
+﻿package com.ruoyi.system.service.impl;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -68,34 +68,32 @@ public class CourseSelectionServiceImpl implements ICourseSelectionService
     {
         if (checkDuplicateSelection(cs.getSno(), cs.getCno()))
         {
-            throw new org.springframework.dao.DataIntegrityViolationException("该学生已选修此课程，不能重复选课");
+            throw new IllegalArgumentException("Course already selected");
         }
-        if (cs.getSemester() == null || cs.getSemester().trim().isEmpty())
+        if (validateScore(cs.getNormalScore(), cs.getTestScore()) != null)
         {
-            throw new IllegalArgumentException("学期不能为空");
+            throw new IllegalArgumentException(validateScore(cs.getNormalScore(), cs.getTestScore()));
         }
         Course course = courseService.selectCourseById(cs.getCno());
-        if (course != null && course.getMaxStudents() != null && course.getMaxStudents() > 0)
+        if (course != null && course.getMaxStudents() != null)
         {
-            int enrolledCount = courseService.selectEnrolledCount(cs.getCno());
-            if (enrolledCount >= course.getMaxStudents())
+            int enrolled = courseService.selectEnrolledCount(cs.getCno());
+            if (enrolled >= course.getMaxStudents())
             {
-                throw new IllegalArgumentException("该课程选课人数已满（" + enrolledCount + "/" + course.getMaxStudents() + "），请选择其他课程");
+                throw new IllegalArgumentException("Course is full");
             }
         }
         return courseSelectionMapper.insertCourseSelection(cs);
     }
 
     @Override
-    @Transactional
     public int updateCourseSelection(CourseSelection cs)
     {
-        String validationError = validateScore(cs.getNormalScore(), cs.getTestScore());
-        if (validationError != null)
+        String error = validateScore(cs.getNormalScore(), cs.getTestScore());
+        if (error != null)
         {
-            throw new IllegalArgumentException(validationError);
+            throw new IllegalArgumentException(error);
         }
-        cs.calculateTotalScore();
         return courseSelectionMapper.updateCourseSelection(cs);
     }
 
@@ -112,11 +110,25 @@ public class CourseSelectionServiceImpl implements ICourseSelectionService
     }
 
     @Override
+    public String validateScore(BigDecimal normalScore, BigDecimal testScore)
+    {
+        if (normalScore != null && (normalScore.compareTo(MIN_SCORE) < 0 || normalScore.compareTo(MAX_SCORE) > 0))
+        {
+            return "Normal score must be 0-100";
+        }
+        if (testScore != null && (testScore.compareTo(MIN_SCORE) < 0 || testScore.compareTo(MAX_SCORE) > 0))
+        {
+            return "Test score must be 0-100";
+        }
+        return null;
+    }
+
+    @Override
     public BigDecimal getStudentGpa(String sno)
     {
         Map<String, Object> params = new HashMap<>();
         params.put("sno", sno);
-        params.put("gpa", BigDecimal.ZERO);
+        params.put("gpa", null);
         courseSelectionMapper.callSpStudentGpa(params);
         return (BigDecimal) params.get("gpa");
     }
@@ -148,20 +160,14 @@ public class CourseSelectionServiceImpl implements ICourseSelectionService
     }
 
     @Override
-    public String validateScore(BigDecimal normalScore, BigDecimal testScore)
+    public List<Map<String, Object>> selectTeacherGradeStats(String tno)
     {
-        if (normalScore == null || testScore == null)
-        {
-            return null;
-        }
-        if (normalScore.compareTo(MIN_SCORE) < 0 || normalScore.compareTo(MAX_SCORE) > 0)
-        {
-            return "平时成绩必须在0-100之间";
-        }
-        if (testScore.compareTo(MIN_SCORE) < 0 || testScore.compareTo(MAX_SCORE) > 0)
-        {
-            return "考试成绩必须在0-100之间";
-        }
-        return null;
+        return courseSelectionMapper.selectTeacherGradeStats(tno);
+    }
+
+    @Override
+    public List<Map<String, Object>> selectStudentSchedule(String sno)
+    {
+        return courseSelectionMapper.selectStudentSchedule(sno);
     }
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head><th:block th:include="include :: header('学生工作台')" /></head>
 <body class="gray-bg">
@@ -10,7 +10,7 @@
 <div class="ibox-content">
 <a class="btn btn-primary" th:href="@{/student/course(sno=${param.sno})}">浏览可选课程</a>
 <a class="btn btn-success" th:href="@{/student/course/my(sno=${param.sno})}">我的选课</a>
-<a class="btn btn-info" th:href="@{/student/grade(sno=${param.sno})}">成绩查询</a>
+<a class="btn btn-info" th:href="@{/student/grade(sno=${param.sno})}">成绩查询</a> <a class="btn btn-warning" th:href="@{/student/schedule(sno=${param.sno})}">我的课表</a> <a class="btn btn-danger" th:href="@{/student/exam(sno=${param.sno})}">考试时间</a>
 </div></div></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
@@ -21,3 +21,6 @@ $(function() {
     }});
 });
 </script></body></html>
+
+
+

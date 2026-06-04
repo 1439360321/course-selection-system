@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head><th:block th:include="include :: header('可选课程')" /></head>
 <body class="gray-bg">
@@ -26,7 +26,7 @@ $(function() {
         url: ctx + "student/course/list",
         createUrl: undefined, updateUrl: undefined, removeUrl: undefined,
         modalName: "课程", uniqueId: "cno",
-        columns: [{field:'cno',title:'课程号'},{field:'cname',title:'课程名'},{field:'credit',title:'学分'},{field:'hours',title:'学时'},{field:'courseType',title:'类型',formatter:function(v){return v==0?'必修':'选修';}},{field:'deptName',title:'开课院系'},{title:'操作',formatter:function(v,r){var cnoEnc=$.common.escapeHtml(r.cno),cnameEnc=$.common.escapeHtml(r.cname);return '<a class="btn btn-success btn-xs" href="#" onclick="selectCourse(\''+cnoEnc+'\',\''+cnameEnc+'\')">选课</a>';}}]
+        columns: [{field:'cno',title:'课程号'},{field:'cname',title:'课程名'},{field:'credit',title:'学分'},{field:'hours',title:'学时'},{field:'courseType',title:'类型',formatter:function(v){return v==0?'必修':'选修';}},{field:'deptName',title:'开课院系'},{field:'maxStudents',title:'名额',formatter:function(v,r){var e=r.enrolledCount||0;return e+'/'+v;}},{title:'操作',formatter:function(v,r){var cnoEnc=$.common.escapeHtml(r.cno),cnameEnc=$.common.escapeHtml(r.cname);return '<a class="btn btn-success btn-xs" href="#" onclick="selectCourse(\''+cnoEnc+'\',\''+cnameEnc+'\')">选课</a>';}}]
     };
     $.table.init(options);
 });
@@ -39,3 +39,6 @@ function selectCourse(cno, cname) {
     });
 }
 </script></body></html>
+
+
+

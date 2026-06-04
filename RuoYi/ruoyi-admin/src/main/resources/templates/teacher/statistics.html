@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('成绩统计')" /></head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+var tno = new URLSearchParams(window.location.search).get("tno") || "";
+$(function() {
+    var options = {
+        url: ctx + "teacher/statistics/list",
+        createUrl: undefined, updateUrl: undefined, removeUrl: undefined,
+        modalName: "统计", uniqueId: "cno",
+        queryParams: function(params) {
+            return {pageSize: params.limit, pageNum: params.offset / params.limit + 1, tno: tno};
+        },
+        columns: [
+            {field:'cno',title:'课程号'},
+            {field:'cname',title:'课程名'},
+            {field:'credit',title:'学分'},
+            {field:'totalStudents',title:'选课人数'},
+            {field:'gradedStudents',title:'已录入'},
+            {field:'avgScore',title:'平均分'},
+            {field:'maxScore',title:'最高分'},
+            {field:'minScore',title:'最低分'},
+            {field:'passRate',title:'及格率(%)'}
+        ]
+    };
+    $.table.init(options);
+});
+</script></body></html>

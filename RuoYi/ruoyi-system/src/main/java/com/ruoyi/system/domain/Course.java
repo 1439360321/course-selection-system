@@ -15,9 +15,7 @@ public class Course
     private String adminId;
     private String deptName;
     private Integer maxStudents;
-
-    public Integer getMaxStudents() { return maxStudents; }
-    public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }
+    private Integer enrolledCount;
 
     public String getCno() { return cno; }
     public void setCno(String cno) { this.cno = cno; }
@@ -43,6 +41,12 @@ public class Course
     public String getDeptName() { return deptName; }
     public void setDeptName(String deptName) { this.deptName = deptName; }
 
+    public Integer getMaxStudents() { return maxStudents; }
+    public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }
+
+    public Integer getEnrolledCount() { return enrolledCount; }
+    public void setEnrolledCount(Integer enrolledCount) { this.enrolledCount = enrolledCount; }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -53,6 +57,8 @@ public class Course
             .append("courseType", getCourseType())
             .append("deptId", getDeptId())
             .append("adminId", getAdminId())
+            .append("maxStudents", getMaxStudents())
+            .append("enrolledCount", getEnrolledCount())
             .toString();
     }
 }

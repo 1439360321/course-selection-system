@@ -6,6 +6,7 @@
         <id property="cno" column="cno"/>
         <result property="semester" column="semester"/>
         <result property="classTime" column="class_time"/>
+        <result property="examTime" column="exam_time"/>
         <result property="adminId" column="admin_id"/>
         <result property="tname" column="tname"/>
         <result property="cname" column="cname"/>
@@ -13,7 +14,7 @@
     </resultMap>
 
     <sql id="selectClassVo">
-        select cl.tno, cl.cno, cl.semester, cl.class_time, cl.admin_id, t.tname, c.cname, CONCAT(cl.tno, '-', cl.cno) as id
+        select cl.tno, cl.cno, cl.semester, cl.class_time, cl.exam_time, cl.admin_id, t.tname, c.cname, CONCAT(cl.tno, '-', cl.cno) as id
         from class cl left join teacher t on cl.tno = t.tno left join course c on cl.cno = c.cno
     </sql>
 
@@ -38,6 +39,7 @@
             <if test="cno != null">cno,</if>
             <if test="semester != null">semester,</if>
             <if test="classTime != null">class_time,</if>
+            <if test="examTime != null">exam_time,</if>
             <if test="adminId != null">admin_id,</if>
         </trim>
         values
@@ -46,6 +48,7 @@
             <if test="cno != null">#{cno},</if>
             <if test="semester != null">#{semester},</if>
             <if test="classTime != null">#{classTime},</if>
+            <if test="examTime != null">#{examTime},</if>
             <if test="adminId != null">#{adminId},</if>
         </trim>
     </insert>
@@ -55,6 +58,7 @@
         <set>
             <if test="semester != null">semester = #{semester},</if>
             <if test="classTime != null">class_time = #{classTime},</if>
+            <if test="examTime != null">exam_time = #{examTime},</if>
             <if test="adminId != null">admin_id = #{adminId},</if>
         </set>
         where tno = #{tno} and cno = #{cno}
