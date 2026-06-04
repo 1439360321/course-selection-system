@@ -16,6 +16,8 @@ public class Course
     private String deptName;
     private Integer maxStudents;
     private Integer enrolledCount;
+    private Integer status;
+    private String rejectReason;
 
     public String getCno() { return cno; }
     public void setCno(String cno) { this.cno = cno; }
@@ -46,6 +48,12 @@ public class Course
 
     public Integer getEnrolledCount() { return enrolledCount; }
     public void setEnrolledCount(Integer enrolledCount) { this.enrolledCount = enrolledCount; }
+
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
+
+    public String getRejectReason() { return rejectReason; }
+    public void setRejectReason(String rejectReason) { this.rejectReason = rejectReason; }
 
     @Override
     public String toString() {

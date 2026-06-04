@@ -1,0 +1,18 @@
+<!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('学分统计')" /></head>
+<body class="gray-bg"><div class="container-div"><div class="row">
+<div class="col-sm-4"><div class="ibox"><div class="ibox-content text-center"><h2 style="color:#1ab394" th:text="${earned}">0</h2><p>已修学分 / <span th:text="${required}">130</span></p>
+<div class="progress"><div class="progress-bar progress-bar-success" th:style="'width:'+${(earned/required)*100}+'%'" th:text="${#numbers.formatDecimal(earned/required*100,0,0)}">0%</div></div></div></div></div>
+<div class="col-sm-4"><div class="ibox"><div class="ibox-content text-center"><h2 style="color:#f8ac59" th:text="${requiredEarned}">0</h2><p>必修学分 / <span th:text="${requiredReq}">80</span></p>
+<div class="progress"><div class="progress-bar progress-bar-warning" th:style="'width:'+${(requiredEarned/requiredReq)*100}+'%'" th:text="${#numbers.formatDecimal(requiredEarned/requiredReq*100,0,0)}">0%</div></div></div></div></div>
+<div class="col-sm-4"><div class="ibox"><div class="ibox-content text-center"><h2 style="color:#7266ba" th:text="${electiveEarned}">0</h2><p>选修学分 / <span th:text="${electiveReq}">50</span></p>
+<div class="progress"><div class="progress-bar progress-bar-info" th:style="'width:'+${(electiveEarned/electiveReq)*100}+'%'" th:text="${#numbers.formatDecimal(electiveEarned/electiveReq*100,0,0)}">0%</div></div></div></div></div>
+<div class="col-sm-12"><div class="select-table table-striped"><table id="credit-table"></table></div></div>
+</div></div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">var ctx=[[@{/}]];
+$(function(){$.table.init({data:[[${detail}]],search:false,modalName:"学分明细",
+  columns:[{field:"cname",title:"课程名"},{field:"credit",title:"学分"},{field:"semester",title:"学期"},
+  {field:"courseType",title:"类型",formatter:function(v){return v==0?"必修":"选修";}},
+  {field:"totalScore",title:"总评",formatter:function(v){return v?v.toFixed(1):'-';}}]});});
+</script></body></html>

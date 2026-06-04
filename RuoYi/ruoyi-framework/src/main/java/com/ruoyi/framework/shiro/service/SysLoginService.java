@@ -53,13 +53,12 @@ public class SysLoginService
      */
     public SysUser login(String username, String password)
     {
-        // 验证码校验 - 已禁用
-        /*String captchaEnabled = configService.selectConfigByKey("sys.account.captchaEnabled");
-        if (!"false".equals(captchaEnabled) && ShiroConstants.CAPTCHA_ERROR.equals(ServletUtils.getRequest().getAttribute(ShiroConstants.CURRENT_CAPTCHA)))
+        // 验证码校验
+        if (ShiroConstants.CAPTCHA_ERROR.equals(ServletUtils.getRequest().getAttribute(ShiroConstants.CURRENT_CAPTCHA)))
         {
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
             throw new CaptchaException();
-        }*/
+        }
         // 用户名或密码为空 错误
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password))
         {

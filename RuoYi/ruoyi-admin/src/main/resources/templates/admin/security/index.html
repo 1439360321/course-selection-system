@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('安全审计')" /></head>
+<body class="gray-bg"><div class="container-div"><div class="row">
+<div class="col-sm-3"><div class="ibox"><div class="ibox-content text-center"><h2 id="fail-count" style="color:#e10e1e;">-</h2><p>今日登录失败</p></div></div></div>
+<div class="col-sm-9 select-table table-striped"><table id="security-table"></table></div>
+</div></div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">var ctx=[[@{/}]];
+$(function(){
+  $.post(ctx+'admin/security/stats',function(r){if(r.code==0)$('#fail-count').text(r.failCount||0);});
+  $.table.init({url:ctx+'admin/security/events',search:false,modalName:"安全事件",uniqueId:"info_id",
+    columns:[{field:"userName",title:"用户名"},{field:"ipaddr",title:"IP地址"},{field:"loginTime",title:"时间"},
+      {field:"status",title:"状态",formatter:function(v){return v==0?'<span class="label label-success">成功</span>':'<span class="label label-danger">失败</span>';}},
+      {field:"msg",title:"信息"}]});
+});
+</script></body></html>

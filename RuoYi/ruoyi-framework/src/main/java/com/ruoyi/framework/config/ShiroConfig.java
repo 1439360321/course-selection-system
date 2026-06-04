@@ -339,7 +339,7 @@ public class ShiroConfig
         shiroFilterFactoryBean.setFilters(filters);
 
         // 所有请求需要认证
-        filterChainDefinitionMap.put("/**", "user,kickout,onlineSession,syncOnlineSession,csrfValidateFilter");
+        filterChainDefinitionMap.put("/**", "user,kickout,onlineSession,syncOnlineSession,captchaValidate,csrfValidateFilter");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
         return shiroFilterFactoryBean;
@@ -372,7 +372,7 @@ public class ShiroConfig
     public CaptchaValidateFilter captchaValidateFilter()
     {
         CaptchaValidateFilter captchaValidateFilter = new CaptchaValidateFilter();
-        captchaValidateFilter.setCaptchaEnabled(false);  // 强制禁用验证码
+        captchaValidateFilter.setCaptchaEnabled(captchaEnabled);  // 验证码开关，由application.yml控制
         captchaValidateFilter.setCaptchaType(captchaType);
         return captchaValidateFilter;
     }

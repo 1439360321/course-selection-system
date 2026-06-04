@@ -19,4 +19,6 @@ public interface TeacherMapper
     public int deleteTeacherById(String tno);
 
     public Teacher checkTnoUnique(String tno);
+
+    public int updateTeacherPassword(@org.apache.ibatis.annotations.Param("tno") String tno, @org.apache.ibatis.annotations.Param("passwordHash") String passwordHash);
 }

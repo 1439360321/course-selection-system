@@ -1,4 +1,4 @@
-﻿package com.ruoyi.system.service.impl;
+package com.ruoyi.system.service.impl;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -169,5 +169,11 @@ public class CourseSelectionServiceImpl implements ICourseSelectionService
     public List<Map<String, Object>> selectStudentSchedule(String sno)
     {
         return courseSelectionMapper.selectStudentSchedule(sno);
+    }
+
+    @Override
+    public List<Map<String, Object>> selectStudentCreditDetail(String sno)
+    {
+        return courseSelectionMapper.selectStudentCreditDetail(sno);
     }
 }

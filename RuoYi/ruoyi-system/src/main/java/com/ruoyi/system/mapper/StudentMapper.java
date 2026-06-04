@@ -19,4 +19,8 @@ public interface StudentMapper
     public int deleteStudentById(String sno);
 
     public Student checkSnoUnique(String sno);
+
+    public int updateStudentProfile(Student student);
+
+    public int updateStudentPassword(@org.apache.ibatis.annotations.Param("sno") String sno, @org.apache.ibatis.annotations.Param("passwordHash") String passwordHash);
 }

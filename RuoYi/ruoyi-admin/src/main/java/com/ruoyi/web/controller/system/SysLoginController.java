@@ -37,6 +37,12 @@ public class SysLoginController extends BaseController
     @Value("${shiro.rememberMe.enabled: false}")
     private boolean rememberMe;
 
+    @Value("${shiro.user.captchaEnabled}")
+    private boolean captchaEnabled;
+
+    @Value("${shiro.user.captchaType}")
+    private String captchaType;
+
     @Autowired
     private ConfigService configService;
 
@@ -52,6 +58,9 @@ public class SysLoginController extends BaseController
         mmap.put("isRemembered", rememberMe);
         // 是否开启用户注册
         mmap.put("isAllowRegister", Convert.toBool(configService.getKey("sys.account.registerUser"), false));
+        // 验证码开关和类型
+        mmap.put("captchaEnabled", captchaEnabled);
+        mmap.put("captchaType", captchaType);
         return "login";
     }
 

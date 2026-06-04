@@ -1,0 +1,19 @@
+<!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('选课时间设置')" /></head>
+<body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12"><div class="ibox"><div class="ibox-content">
+<form class="form-horizontal m-t" id="window-form">
+  <div class="form-group"><label class="col-sm-3 control-label">选课开始时间：</label><div class="col-sm-6">
+    <input class="form-control time-input" type="text" id="startTime" data-type="datetime" data-format="yyyy-MM-dd HH:mm:ss" /></div></div>
+  <div class="form-group"><label class="col-sm-3 control-label">选课结束时间：</label><div class="col-sm-6">
+    <input class="form-control time-input" type="text" id="endTime" data-type="datetime" data-format="yyyy-MM-dd HH:mm:ss" /></div></div>
+  <div class="form-group"><div class="col-sm-6 col-sm-offset-3"><button type="button" class="btn btn-primary" onclick="save()">保存</button></div></div>
+</form></div></div></div></div></div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">var ctx=[[@{/}]];
+function save(){$.post(ctx+'admin/statistics/security/todayFails',function(){});/*placeholder*/
+  var d={startTime:$('#startTime').val(),endTime:$('#endTime').val()};
+  $.ajax({url:ctx+'system/config/edit',type:'POST',data:{configKey:'course.selection.start',configValue:d.startTime},success:function(){
+    $.ajax({url:ctx+'system/config/edit',type:'POST',data:{configKey:'course.selection.end',configValue:d.endTime},success:function(){
+      $.modal.msgSuccess("保存成功");}});
+  }});}
+</script></body></html>

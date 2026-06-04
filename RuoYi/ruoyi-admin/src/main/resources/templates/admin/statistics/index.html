@@ -10,6 +10,7 @@
                     <li class="active"><a data-toggle="tab" href="#tab-enroll">选课统计</a></li>
                     <li><a data-toggle="tab" href="#tab-fail">不及格名单</a></li>
                     <li><a data-toggle="tab" href="#tab-grades">成绩排名</a></li>
+                    <li><a data-toggle="tab" href="#tab-security">安全概览</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="tab-enroll" class="tab-pane active">
@@ -31,6 +32,14 @@
                             <div class="col-sm-12 select-table table-striped">
                                 <table id="grade-table"></table>
                                 <div id="gpa-display" style="margin-top:15px;font-size:16px;font-weight:bold;color:#e10e1e;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-security" class="tab-pane">
+                        <div class="row">
+                            <div class="col-sm-3"><div class="card"><div class="card-body text-center"><h2 id="fail-count" style="color:#e10e1e;">-</h2><p>今日登录失败</p></div></div></div>
+                            <div class="col-sm-9 select-table table-striped">
+                                <table id="security-table"></table>
                             </div>
                         </div>
                     </div>
@@ -75,6 +84,26 @@ $(function() {
         ]
     };
     $("#fail-table").bootstrapTable("destroy").bootstrapTable(failOptions);
+});
+
+// 安全概览标签页激活时加载数据
+$('a[href="#tab-security"]').on('shown.bs.tab', function() {
+    $.get(ctx + "admin/statistics/security/todayFails", function(r) {
+        if (r.code == 0) $('#fail-count').text(r.count || 0);
+    });
+    var secOpts = {
+        url: ctx + "admin/statistics/security/recentEvents",
+        createUrl: undefined, updateUrl: undefined, removeUrl: undefined, search: false,
+        modalName: "安全事件", uniqueId: "info_id",
+        columns: [
+            {field:"userName",title:"用户名"},
+            {field:"ipaddr",title:"IP地址"},
+            {field:"loginTime",title:"时间"},
+            {field:"status",title:"状态",formatter:function(v){return v == 0 ? '<span class="label label-success">成功</span>' : '<span class="label label-danger">失败</span>';}},
+            {field:"msg",title:"信息"}
+        ]
+    };
+    $("#security-table").bootstrapTable("destroy").bootstrapTable(secOpts);
 });
 
 function queryGrades() {

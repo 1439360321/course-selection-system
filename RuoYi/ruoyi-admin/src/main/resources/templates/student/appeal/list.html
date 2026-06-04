@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('成绩申诉')" /></head>
+<body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12 select-table table-striped">
+<table id="appeal-table"></table></div></div></div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">var ctx=[[@{/}]];
+$(function(){
+  var ops={url:ctx+"student/appeal/list",search:false,modalName:"申诉",uniqueId:"appealId",
+    columns:[{field:"cname",title:"课程"},{field:"reason",title:"申诉理由"},{field:"status",title:"状态",formatter:function(v){
+      if(v==0)return'<span class="label label-warning">待处理</span>';if(v==1)return'<span class="label label-success">已同意</span>';return'<span class="label label-danger">已驳回</span>';}},
+      {field:"reply",title:"回复"},{field:"handleTime",title:"处理时间"}]};
+  $.table.init(ops);
+});
+</script></body></html>

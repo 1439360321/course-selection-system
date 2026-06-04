@@ -76,4 +76,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from student where sno = #{sno}
     </delete>
 
+    <update id="updateStudentProfile" parameterType="Student">
+        update student
+        <set>
+            <if test="nativePlace != null">native_place = #{nativePlace},</if>
+            <if test="phone != null">phone = #{phone},</if>
+        </set>
+        where sno = #{sno}
+    </update>
+
+    <update id="updateStudentPassword">
+        update student set password_hash = #{passwordHash} where sno = #{sno}
+    </update>
+
 </mapper>

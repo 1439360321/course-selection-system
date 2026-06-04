@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CourseEvaluationMapper">
+
+    <resultMap type="com.ruoyi.system.domain.CourseEvaluation" id="CourseEvaluationResult">
+        <id property="evalId" column="eval_id"/>
+        <result property="sno" column="sno"/>
+        <result property="cno" column="cno"/>
+        <result property="tno" column="tno"/>
+        <result property="semester" column="semester"/>
+        <result property="rating" column="rating"/>
+        <result property="comment" column="comment"/>
+        <result property="isAnonymous" column="is_anonymous"/>
+        <result property="createTime" column="create_time"/>
+        <result property="sname" column="sname"/>
+        <result property="cname" column="cname"/>
+    </resultMap>
+
+    <sql id="selectEvaluationVo">
+        select e.eval_id, e.sno, e.cno, e.tno, e.semester, e.rating, e.comment,
+               e.is_anonymous, e.create_time, s.sname, c.cname
+        from course_evaluation e
+        left join student s on e.sno = s.sno
+        left join course c on e.cno = c.cno
+    </sql>
+
+    <select id="selectEvaluationList" parameterType="com.ruoyi.system.domain.CourseEvaluation" resultMap="CourseEvaluationResult">
+        <include refid="selectEvaluationVo"/>
+        <where>
+            <if test="sno != null and sno != ''">and e.sno = #{sno}</if>
+            <if test="cno != null and cno != ''">and e.cno = #{cno}</if>
+            <if test="tno != null and tno != ''">and e.tno = #{tno}</if>
+        </where>
+        order by e.create_time desc
+    </select>
+
+    <insert id="insertEvaluation" parameterType="com.ruoyi.system.domain.CourseEvaluation" useGeneratedKeys="true" keyProperty="evalId">
+        insert into course_evaluation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sno != null and sno != ''">sno,</if>
+            <if test="cno != null and cno != ''">cno,</if>
+            <if test="tno != null and tno != ''">tno,</if>
+            <if test="semester != null and semester != ''">semester,</if>
+            <if test="rating != null">rating,</if>
+            <if test="comment != null">comment,</if>
+            <if test="isAnonymous != null">is_anonymous,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sno != null and sno != ''">#{sno},</if>
+            <if test="cno != null and cno != ''">#{cno},</if>
+            <if test="tno != null and tno != ''">#{tno},</if>
+            <if test="semester != null and semester != ''">#{semester},</if>
+            <if test="rating != null">#{rating},</if>
+            <if test="comment != null">#{comment},</if>
+            <if test="isAnonymous != null">#{isAnonymous},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <select id="checkExists" resultType="int">
+        select count(*) from course_evaluation where sno = #{param1} and cno = #{param2}
+    </select>
+
+    <select id="selectEvaluationsByTeacher" parameterType="string" resultMap="CourseEvaluationResult">
+        <include refid="selectEvaluationVo"/>
+        where e.tno = #{tno}
+        order by e.create_time desc
+    </select>
+
+    <select id="selectTeacherEvalStats" parameterType="string" resultType="map">
+        select c.cno as "cno", c.cname as "cname",
+               round(avg(e.rating), 1) as "avgRating",
+               count(e.eval_id) as "evalCount",
+               count(case when e.rating = 5 then 1 end) as "fiveStar",
+               count(case when e.rating = 4 then 1 end) as "fourStar",
+               count(case when e.rating = 3 then 1 end) as "threeStar",
+               count(case when e.rating = 2 then 1 end) as "twoStar",
+               count(case when e.rating = 1 then 1 end) as "oneStar"
+        from class cl
+        join course c on cl.cno = c.cno
+        left join course_evaluation e on c.cno = e.cno
+        where cl.tno = #{tno}
+        group by c.cno, c.cname
+        order by c.cno
+    </select>
+
+</mapper>

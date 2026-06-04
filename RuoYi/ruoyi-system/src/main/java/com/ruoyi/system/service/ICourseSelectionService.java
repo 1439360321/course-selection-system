@@ -24,4 +24,6 @@ public interface ICourseSelectionService
     public List<Map<String, Object>> selectTeacherGradeStats(String tno);
 
     public List<Map<String, Object>> selectStudentSchedule(String sno);
+
+    public List<Map<String, Object>> selectStudentCreditDetail(String sno);
 }

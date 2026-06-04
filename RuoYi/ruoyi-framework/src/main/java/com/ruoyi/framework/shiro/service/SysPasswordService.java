@@ -5,6 +5,7 @@ import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.ShiroConstants;
@@ -14,6 +15,7 @@ import com.ruoyi.common.exception.user.UserPasswordRetryLimitExceedException;
 import com.ruoyi.common.utils.MessageUtils;
 import com.ruoyi.common.utils.security.Md5Utils;
 import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import jakarta.annotation.PostConstruct;
 
@@ -68,9 +70,30 @@ public class SysPasswordService
         }
     }
 
+    @Autowired
+    private ISysUserService userService;
+
+    private static final BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+
     public boolean matches(SysUser user, String newPassword)
     {
-        return user.getPassword().equals(encryptPassword(user.getLoginName(), newPassword, user.getSalt()));
+        String stored = user.getPassword();
+        // BCrypt 密码（以 $2a$ 开头）
+        if (stored != null && stored.startsWith("$2a$"))
+        {
+            return bcryptEncoder.matches(newPassword, stored);
+        }
+        // 旧 MD5 密码
+        boolean md5Match = stored != null && stored.equals(Md5Utils.hash(user.getLoginName() + newPassword + user.getSalt()));
+        if (md5Match)
+        {
+            // 透明迁移：将旧 MD5 密码自动升级为 BCrypt
+            String bcryptHash = bcryptEncoder.encode(newPassword);
+            user.setPassword(bcryptHash);
+            user.setSalt("");
+            userService.resetUserPwd(user);
+        }
+        return md5Match;
     }
 
     public void clearLoginRecordCache(String loginName)
@@ -80,6 +103,6 @@ public class SysPasswordService
 
     public String encryptPassword(String loginName, String password, String salt)
     {
-        return Md5Utils.hash(loginName + password + salt);
+        return bcryptEncoder.encode(password);
     }
 }

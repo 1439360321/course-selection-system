@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AuditLogMapper">
+
+    <resultMap type="com.ruoyi.system.domain.AuditLog" id="AuditLogResult">
+        <id     property="logId"     column="log_id"/>
+        <result property="adminId"   column="admin_id"/>
+        <result property="action"    column="action"/>
+        <result property="detail"    column="detail"/>
+        <result property="ipAddr"    column="ip_addr"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insertAuditLog" parameterType="com.ruoyi.system.domain.AuditLog" useGeneratedKeys="true" keyProperty="logId">
+        insert into audit_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="adminId != null">admin_id,</if>
+            <if test="action != null">action,</if>
+            <if test="detail != null">detail,</if>
+            <if test="ipAddr != null">ip_addr,</if>
+            <if test="createdAt != null">created_at,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="adminId != null">#{adminId},</if>
+            <if test="action != null">#{action},</if>
+            <if test="detail != null">#{detail},</if>
+            <if test="ipAddr != null">#{ipAddr},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+        </trim>
+    </insert>
+
+</mapper>

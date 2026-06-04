@@ -117,6 +117,40 @@
         where cs.sno = #{sno}
         order by cl.class_time
     </select>
+    <!-- 图表数据查询 -->
+    <select id="selectGradeDistribution" resultType="map">
+        select case
+            when (cs.normal_score * 0.4 + cs.test_score * 0.6) >= 90 then '优秀(90+)'
+            when (cs.normal_score * 0.4 + cs.test_score * 0.6) >= 80 then '良好(80-89)'
+            when (cs.normal_score * 0.4 + cs.test_score * 0.6) >= 70 then '中等(70-79)'
+            when (cs.normal_score * 0.4 + cs.test_score * 0.6) >= 60 then '及格(60-69)'
+            else '不及格(低于60)'
+        end as name,
+        count(*) as value
+        from courseselection cs
+        where cs.normal_score is not null and cs.test_score is not null
+        group by name
+        order by field(name, '优秀(90+)', '良好(80-89)', '中等(70-79)', '及格(60-69)', '不及格(低于60)')
+    </select>
+
+    <select id="selectDeptEnrollmentStats" resultType="map">
+        select d.dept_name as name, ifnull(count(cs.sno), 0) as value
+        from department d
+        join course c on d.dept_id = c.dept_id
+        left join courseselection cs on c.cno = cs.cno
+        group by d.dept_id, d.dept_name
+        order by value desc
+    </select>
+
+    <select id="selectGpaRawData" resultType="map">
+        select cs.sno, cs.normal_score as "normalScore", cs.test_score as "testScore", c.credit
+        from courseselection cs
+        join course c on cs.cno = c.cno
+        where cs.normal_score is not null and cs.test_score is not null
+        and c.credit is not null
+        order by cs.sno
+    </select>
+
     <select id="selectTeacherGradeStats" parameterType="string" resultType="map">
         select c.cno as "cno", c.cname as "cname", c.credit as "credit",
                count(cs.sno) as "totalStudents",
@@ -131,6 +165,17 @@
         where cl.tno = #{tno}
         group by c.cno, c.cname, c.credit
         order by c.cno
+    </select>
+
+    <select id="selectStudentCreditDetail" parameterType="string" resultType="map">
+        select cs.cno as "cno", c.cname as "cname", c.credit as "credit",
+               c.course_type as "courseType", cs.semester as "semester",
+               cs.normal_score as "normalScore", cs.test_score as "testScore",
+               (cs.normal_score * 0.4 + cs.test_score * 0.6) as "totalScore"
+        from courseselection cs
+        join course c on cs.cno = c.cno
+        where cs.sno = #{sno}
+        order by cs.semester, cs.cno
     </select>
 </mapper>
 

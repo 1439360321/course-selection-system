@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CourseNoticeMapper">
+
+    <resultMap type="com.ruoyi.system.domain.CourseNotice" id="CourseNoticeResult">
+        <id     property="noticeId"   column="notice_id"   />
+        <result property="cno"        column="cno"         />
+        <result property="tno"        column="tno"         />
+        <result property="title"      column="title"       />
+        <result property="content"    column="content"     />
+        <result property="createTime" column="create_time" />
+        <result property="cname"      column="cname"       />
+        <result property="tname"      column="tname"       />
+    </resultMap>
+
+    <sql id="selectCourseNoticeVo">
+        select cn.notice_id, cn.cno, cn.tno, cn.title, cn.content, cn.create_time,
+               c.cname, t.tname
+        from course_notice cn
+        left join course c on cn.cno = c.cno
+        left join teacher t on cn.tno = t.tno
+    </sql>
+
+    <select id="selectCourseNoticeList" parameterType="com.ruoyi.system.domain.CourseNotice" resultMap="CourseNoticeResult">
+        <include refid="selectCourseNoticeVo"/>
+        <where>
+            <if test="cno != null and cno != ''">
+                and cn.cno = #{cno}
+            </if>
+            <if test="tno != null and tno != ''">
+                and cn.tno = #{tno}
+            </if>
+            <if test="title != null and title != ''">
+                and cn.title like concat('%', #{title}, '%')
+            </if>
+        </where>
+        order by cn.create_time desc
+    </select>
+
+    <select id="selectCourseNoticeById" parameterType="Long" resultMap="CourseNoticeResult">
+        <include refid="selectCourseNoticeVo"/>
+        where cn.notice_id = #{noticeId}
+    </select>
+
+    <insert id="insertCourseNotice" parameterType="com.ruoyi.system.domain.CourseNotice" useGeneratedKeys="true" keyProperty="noticeId">
+        insert into course_notice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cno != null and cno != ''">cno,</if>
+            <if test="tno != null and tno != ''">tno,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null">content,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cno != null and cno != ''">#{cno},</if>
+            <if test="tno != null and tno != ''">#{tno},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null">#{content},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCourseNotice" parameterType="com.ruoyi.system.domain.CourseNotice">
+        update course_notice
+        <set>
+            <if test="cno != null and cno != ''">cno = #{cno},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+        </set>
+        where notice_id = #{noticeId}
+    </update>
+
+    <select id="selectCourseNoticeListByCnos" parameterType="java.util.Set" resultMap="CourseNoticeResult">
+        <include refid="selectCourseNoticeVo"/>
+        where cn.cno in
+        <foreach collection="collection" item="cno" open="(" separator="," close=")">
+            #{cno}
+        </foreach>
+        order by cn.create_time desc
+    </select>
+
+    <delete id="deleteCourseNoticeById" parameterType="Long">
+        delete from course_notice where notice_id = #{noticeId}
+    </delete>
+
+</mapper>

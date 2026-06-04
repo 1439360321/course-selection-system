@@ -36,4 +36,12 @@ public interface CourseSelectionMapper
 
 
     public List<Map<String, Object>> selectStudentSchedule(String sno);
+
+    // 图表数据
+    public List<Map<String, Object>> selectGradeDistribution();
+    public List<Map<String, Object>> selectDeptEnrollmentStats();
+    public List<Map<String, Object>> selectGpaRawData();
+
+    // 学分统计
+    public List<Map<String, Object>> selectStudentCreditDetail(String sno);
 }

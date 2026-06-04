@@ -76,4 +76,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from teacher where tno = #{tno}
     </delete>
 
+    <update id="updateTeacherPassword">
+        update teacher set password_hash = #{passwordHash} where tno = #{tno}
+    </update>
+
 </mapper>

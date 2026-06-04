@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('新增开课申请')" /></head>
+<body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-8 col-sm-offset-2"><div class="ibox"><div class="ibox-content">
+<form class="form-horizontal m-t" id="proposal-form">
+  <div class="form-group"><label class="col-sm-3 control-label">课程名：</label><div class="col-sm-6"><input class="form-control" name="cname" required /></div></div>
+  <div class="form-group"><label class="col-sm-3 control-label">学分：</label><div class="col-sm-6"><input class="form-control" name="credit" required /></div></div>
+  <div class="form-group"><label class="col-sm-3 control-label">学时：</label><div class="col-sm-6"><input class="form-control" name="hours" required /></div></div>
+  <div class="form-group"><label class="col-sm-3 control-label">类型：</label><div class="col-sm-6"><select class="form-control" name="courseType"><option value="0">必修</option><option value="1">选修</option></select></div></div>
+  <div class="form-group"><label class="col-sm-3 control-label">最大容量：</label><div class="col-sm-6"><input class="form-control" name="maxStudents" /></div></div>
+  <div class="form-group"><div class="col-sm-6 col-sm-offset-3"><button type="button" class="btn btn-primary" onclick="submit()">提交申请</button></div></div>
+</form></div></div></div></div></div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">var ctx=[[@{/}]];
+function submit(){var d=$('#proposal-form').serialize();
+  $.post(ctx+'teacher/proposal/add',d,function(r){if(r.code==0){$.modal.msgSuccess("提交成功");setTimeout(function(){window.location.href=ctx+'teacher/proposal';},1500);}else $.modal.msgError(r.msg);});}
+</script></body></html>

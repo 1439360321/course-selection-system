@@ -1,7 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
-import org.apache.shiro.crypto.hash.SimpleHash;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.utils.StringUtils;
@@ -35,7 +35,7 @@ public class TeacherServiceImpl implements ITeacherService
     {
         if (StringUtils.isNotEmpty(teacher.getPasswordHash()))
         {
-            teacher.setPasswordHash(new SimpleHash("MD5", teacher.getPasswordHash(), null, 1).toHex());
+            teacher.setPasswordHash(new BCryptPasswordEncoder().encode(teacher.getPasswordHash()));
         }
         return teacherMapper.insertTeacher(teacher);
     }
@@ -45,7 +45,7 @@ public class TeacherServiceImpl implements ITeacherService
     {
         if (StringUtils.isNotEmpty(teacher.getPasswordHash()))
         {
-            teacher.setPasswordHash(new SimpleHash("MD5", teacher.getPasswordHash(), null, 1).toHex());
+            teacher.setPasswordHash(new BCryptPasswordEncoder().encode(teacher.getPasswordHash()));
         }
         return teacherMapper.updateTeacher(teacher);
     }

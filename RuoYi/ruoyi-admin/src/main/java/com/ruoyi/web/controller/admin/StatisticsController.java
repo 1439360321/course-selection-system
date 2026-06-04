@@ -1,9 +1,11 @@
 package com.ruoyi.web.controller.admin;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.service.ICourseSelectionService;
 import com.ruoyi.system.service.ICourseService;
 
@@ -25,6 +28,8 @@ public class StatisticsController extends BaseController
     private ICourseSelectionService courseSelectionService;
     @Autowired
     private ICourseService courseService;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @GetMapping()
     public String index() { return "admin/statistics/index"; }
@@ -91,6 +96,30 @@ public class StatisticsController extends BaseController
     public TableDataInfo grades(String sno)
     {
         List<Map<String, Object>> list = courseSelectionService.selectStudentGradeStats(sno);
+        return getDataTable(list);
+    }
+
+    /** 安全概览 - 今日登录失败统计 */
+    @RequestMapping("/security/todayFails")
+    @ResponseBody
+    public AjaxResult todayFails()
+    {
+        try {
+            String today = DateUtils.dateTimeNow("yyyy-MM-dd");
+            String sql = "SELECT COUNT(*) AS cnt FROM sys_logininfor WHERE status = 1 AND login_time LIKE ?";
+            Map<String, Object> result = jdbcTemplate.queryForMap(sql, today + "%");
+            return success().put("count", result.get("cnt"));
+        } catch (Exception e) { return success().put("count", 0); }
+    }
+
+    /** 安全概览 - 最近安全事件 */
+    @RequestMapping("/security/recentEvents")
+    @ResponseBody
+    public TableDataInfo recentEvents()
+    {
+        String sql = "SELECT info_id, login_name AS userName, ipaddr, login_time AS loginTime, status, msg " +
+                     "FROM sys_logininfor ORDER BY info_id DESC LIMIT 20";
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
         return getDataTable(list);
     }
 }

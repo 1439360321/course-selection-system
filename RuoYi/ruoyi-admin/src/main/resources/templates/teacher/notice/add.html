@@ -1,0 +1,13 @@
+<!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('发布公告')" /></head>
+<body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-8 col-sm-offset-2"><div class="ibox"><div class="ibox-content">
+<form class="form-horizontal m-t" id="notice-form">
+  <div class="form-group"><label class="col-sm-3 control-label">课程：</label><div class="col-sm-6"><input class="form-control" name="cno" placeholder="填写课程号" required /></div></div>
+  <div class="form-group"><label class="col-sm-3 control-label">标题：</label><div class="col-sm-6"><input class="form-control" name="title" required /></div></div>
+  <div class="form-group"><label class="col-sm-3 control-label">内容：</label><div class="col-sm-6"><textarea class="form-control" name="content" rows="5"></textarea></div></div>
+  <div class="form-group"><div class="col-sm-6 col-sm-offset-3"><button type="button" class="btn btn-primary" onclick="submit()">发布</button></div></div>
+</form></div></div></div></div></div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">var ctx=[[@{/}]];
+function submit(){$.post(ctx+'teacher/notice/add',$('#notice-form').serialize(),function(r){if(r.code==0){$.modal.msgSuccess("发布成功");setTimeout(function(){window.location.href=ctx+'teacher/notice';},1500);}else $.modal.msgError(r.msg);});}
+</script></body></html>

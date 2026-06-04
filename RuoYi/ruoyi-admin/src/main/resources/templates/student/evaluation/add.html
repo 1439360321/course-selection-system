@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('提交课程评价')" /></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content">
+<div class="row">
+<div class="col-sm-12">
+<div class="ibox">
+<div class="ibox-title"><h5>课程评价 - <span th:text="${cname}">课程名</span>（<span th:text="${cno}">CNO001</span>）</h5></div>
+<div class="ibox-content">
+<div th:if="${alreadyEvaluated}" class="alert alert-warning">
+    <i class="fa fa-warning"></i> 您已经评价过该课程，不能重复评价。
+    <a th:href="@{/student/evaluation}" class="alert-link">返回评价列表</a>
+</div>
+<form class="form-horizontal" id="form-eval-add" th:unless="${alreadyEvaluated}">
+    <input type="hidden" name="cno" th:value="${cno}" />
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">星级评分</label>
+        <div class="col-sm-10">
+            <div id="star-rating">
+                <span class="star-item" data-star="1"><i class="fa fa-star-o fa-2x"></i></span>
+                <span class="star-item" data-star="2"><i class="fa fa-star-o fa-2x"></i></span>
+                <span class="star-item" data-star="3"><i class="fa fa-star-o fa-2x"></i></span>
+                <span class="star-item" data-star="4"><i class="fa fa-star-o fa-2x"></i></span>
+                <span class="star-item" data-star="5"><i class="fa fa-star-o fa-2x"></i></span>
+                <span id="rating-text" class="text-muted" style="margin-left:12px;font-size:16px;">请点击星星评分</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">评价内容</label>
+        <div class="col-sm-10">
+            <textarea class="form-control" name="comment" rows="5" maxlength="500" placeholder="请输入您的评价（可选，最多500字）"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">匿名评价</label>
+        <div class="col-sm-10">
+            <label class="checkbox-inline">
+                <input type="checkbox" name="isAnonymous" value="1" /> 匿名评价（教师端不显示姓名）
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-primary" id="btn-submit">
+                <i class="fa fa-check"></i> 提交评价
+            </button>
+            <a class="btn btn-default" th:href="@{/student/evaluation}">返回</a>
+        </div>
+    </div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+var selectedRating = 0;
+
+$(function() {
+    // star rating click
+    $("#star-rating").on("click", ".star-item", function() {
+        var star = parseInt($(this).data("star"));
+        selectedRating = star;
+        $("#star-rating .star-item").each(function() {
+            var s = parseInt($(this).data("star"));
+            if (s <= star) {
+                $(this).find("i").removeClass("fa-star-o").addClass("fa-star").css("color", "#f0ad4e");
+            } else {
+                $(this).find("i").removeClass("fa-star").addClass("fa-star-o").css("color", "");
+            }
+        });
+        var texts = ["", "非常差", "较差", "一般", "较好", "非常好"];
+        $("#rating-text").text(texts[star] + " (" + star + "星)");
+    });
+
+    // hover effect
+    $("#star-rating").on("mouseenter", ".star-item", function() {
+        var star = parseInt($(this).data("star"));
+        $("#star-rating .star-item").each(function() {
+            var s = parseInt($(this).data("star"));
+            if (s <= star) {
+                $(this).find("i").removeClass("fa-star-o").addClass("fa-star").css("color", "#f0ad4e");
+            } else {
+                $(this).find("i").removeClass("fa-star").addClass("fa-star-o").css("color", "");
+            }
+        });
+    });
+
+    $("#star-rating").on("mouseleave", function() {
+        $("#star-rating .star-item").each(function() {
+            var s = parseInt($(this).data("star"));
+            if (s <= selectedRating) {
+                $(this).find("i").removeClass("fa-star-o").addClass("fa-star").css("color", "#f0ad4e");
+            } else {
+                $(this).find("i").removeClass("fa-star").addClass("fa-star-o").css("color", "");
+            }
+        });
+    });
+
+    // submit
+    $("#btn-submit").click(function() {
+        if (selectedRating === 0) {
+            $.modal.alertWarning("请选择星级评分");
+            return;
+        }
+        var isAnonymous = $("input[name='isAnonymous']").is(":checked") ? 1 : 0;
+        $.ajax({
+            type: "POST",
+            url: ctx + "student/evaluation/add",
+            data: {
+                cno: $("input[name='cno']").val(),
+                rating: selectedRating,
+                comment: $("textarea[name='comment']").val(),
+                isAnonymous: isAnonymous
+            },
+            success: function(r) {
+                if (r.code == web_status.SUCCESS) {
+                    $.modal.msgSuccess(r.msg);
+                    setTimeout(function() {
+                        window.location.href = ctx + "student/evaluation";
+                    }, 1000);
+                } else {
+                    $.modal.alertError(r.msg);
+                }
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:include="include :: header('课程公告')" /></head>
+<body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12">
+<a class="btn btn-primary btn-sm" th:href="@{/teacher/notice/add}">发布公告</a>
+<div class="select-table table-striped"><table id="notice-table"></table></div></div></div></div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">var ctx=[[@{/}]];
+$(function(){
+  $.table.init({url:ctx+"teacher/notice/list",search:false,modalName:"公告",uniqueId:"noticeId",
+    columns:[{field:"title",title:"标题"},{field:"cname",title:"课程"},{field:"content",title:"内容"},{field:"createTime",title:"发布时间"},
+      {title:"操作",formatter:function(v,r,i){return'<a class="btn btn-danger btn-xs del-btn" data-id="'+r.noticeId+'">删除</a>';}}]});
+  $(document).on('click','.del-btn',function(){var id=$(this).data('id');$.modal.confirm("确认删除？",function(){$.post(ctx+'teacher/notice/remove',{ids:id.toString()},function(r){if(r.code==0)$.table.refresh();});});});
+});
+</script></body></html>
