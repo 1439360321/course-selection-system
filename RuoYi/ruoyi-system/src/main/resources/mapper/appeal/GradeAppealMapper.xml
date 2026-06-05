@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.GradeAppealMapper">
+
+    <resultMap type="com.ruoyi.system.domain.GradeAppeal" id="AppealResult">
+        <id     property="appealId"   column="appeal_id"  />
+        <result property="sno"        column="sno"        />
+        <result property="cno"        column="cno"        />
+        <result property="semester"   column="semester"   />
+        <result property="reason"     column="reason"     />
+        <result property="status"     column="status"     />
+        <result property="reply"      column="reply"      />
+        <result property="handler"    column="handler"    />
+        <result property="createTime" column="create_time"/>
+        <result property="handleTime" column="handle_time"/>
+        <result property="sname"      column="sname"      />
+        <result property="cname"      column="cname"      />
+    </resultMap>
+
+    <sql id="selectAppealVo">
+        select a.appeal_id, a.sno, a.cno, a.semester, a.reason, a.status,
+               a.reply, a.handler, a.create_time, a.handle_time,
+               s.sname as sname, c.cname as cname
+        from grade_appeal a
+        left join student s on a.sno = s.sno
+        left join course c on a.cno = c.cno
+    </sql>
+
+    <select id="selectAppealList" parameterType="com.ruoyi.system.domain.GradeAppeal" resultMap="AppealResult">
+        <include refid="selectAppealVo"/>
+        <where>
+            <if test="sno != null and sno != ''"> and a.sno = #{sno}</if>
+            <if test="cno != null and cno != ''"> and a.cno = #{cno}</if>
+            <if test="status != null"> and a.status = #{status}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <select id="selectAppealsByTeacher" parameterType="map" resultMap="AppealResult">
+        <include refid="selectAppealVo"/>
+        inner join class cl on a.cno = cl.cno and cl.tno = #{tno}
+        order by a.create_time desc
+    </select>
+
+    <select id="selectAppealById" parameterType="Long" resultMap="AppealResult">
+        <include refid="selectAppealVo"/>
+        where a.appeal_id = #{appealId}
+    </select>
+
+    <insert id="insertAppeal" parameterType="com.ruoyi.system.domain.GradeAppeal" useGeneratedKeys="true" keyProperty="appealId">
+        insert into grade_appeal
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sno != null">sno,</if>
+            <if test="cno != null">cno,</if>
+            <if test="semester != null">semester,</if>
+            <if test="reason != null">reason,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sno != null">#{sno},</if>
+            <if test="cno != null">#{cno},</if>
+            <if test="semester != null">#{semester},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAppeal" parameterType="com.ruoyi.system.domain.GradeAppeal">
+        update grade_appeal
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="reply != null">reply = #{reply},</if>
+            <if test="handler != null">handler = #{handler},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+        </set>
+        where appeal_id = #{appealId}
+    </update>
+
+    <select id="selectCountBySnoAndCno" parameterType="map" resultType="int">
+        select count(*) from grade_appeal where sno = #{sno} and cno = #{cno}
+    </select>
+
+</mapper>

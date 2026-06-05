@@ -32,7 +32,7 @@ public class SecurityController extends BaseController
         return getDataTable(list);
     }
 
-    @PostMapping("/stats")
+    @GetMapping("/stats")
     @ResponseBody
     public AjaxResult stats() {
         String today = DateUtils.dateTimeNow("yyyy-MM-dd");

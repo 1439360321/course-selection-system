@@ -1,13 +1,17 @@
 <!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head><th:block th:include="include :: header('学生评教')" /></head>
 <body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12 select-table table-striped">
-<table id="eval-table"></table></div></div></div>
+<table id="bootstrap-table"></table></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">var ctx=[[@{/}]];
 $(function(){
-  $.table.init({url:ctx+"student/evaluation/list",search:false,modalName:"评教",
-    columns:[{field:"cname",title:"课程"},{field:"semester",title:"学期"},{field:"rating",title:"评分",formatter:function(v){var s='';for(var i=0;i<v;i++)s+='★';return s;}},
-      {field:"comment",title:"评价"},{field:"createTime",title:"时间"},
-      {title:"操作",formatter:function(v,r,i){return'<a class="btn btn-primary btn-xs" href="'+ctx+'student/evaluation/add/'+r.cno+'">评价</a>';}}]});
+  $.table.init({url:ctx+"student/evaluation/list",createUrl:undefined,updateUrl:undefined,removeUrl:undefined,modalName:"评教",
+    columns:[{field:"cname",title:"课程"},{field:"semester",title:"学期"},
+      {field:"rating",title:"评分",formatter:function(v){if(!v)return'<span class="label label-default">未评</span>';var s='';for(var i=0;i<v;i++)s+='★';return s;}},
+      {field:"comment",title:"评价",formatter:function(v){return $.common.escapeHtml(v)||'—';}},
+      {field:"createTime",title:"时间",formatter:function(v){return v||'—';}},
+      {title:"操作",formatter:function(v,r,i){if(r.evaluated)return'<span class="label label-success">已评</span>';
+        return'<a class="btn btn-primary btn-xs" href="'+ctx+'student/evaluation/add/'+$.common.escapeHtml(r.cno)+'">去评教</a>';}}
+    ]});
 });
 </script></body></html>

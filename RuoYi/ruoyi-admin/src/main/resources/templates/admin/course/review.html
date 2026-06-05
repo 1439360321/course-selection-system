@@ -1,11 +1,11 @@
 <!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head><th:block th:include="include :: header('课程审核')" /></head>
 <body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12 select-table table-striped">
-<table id="review-table"></table></div></div></div>
+<table id="bootstrap-table"></table></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">var ctx=[[@{/}]];
 $(function(){
-  var ops={url:ctx+"admin/audit/list",search:false,modalName:"课程审核",uniqueId:"cno",
+  $.table.init({url:ctx+"admin/audit/list",createUrl:undefined,updateUrl:undefined,removeUrl:undefined,modalName:"课程审核",uniqueId:"cno",
     columns:[
       {field:"cno",title:"课程号"},{field:"cname",title:"课程名"},
       {field:"credit",title:"学分"},{field:"hours",title:"学时"},
@@ -17,9 +17,8 @@ $(function(){
       {title:"操作",formatter:function(v,r,i){if(r.status!=0)return'';
         return'<a class="btn btn-success btn-xs approve-btn" data-cno="'+$.common.escapeHtml(r.cno)+'">通过</a> '+
                '<a class="btn btn-danger btn-xs reject-btn" data-cno="'+$.common.escapeHtml(r.cno)+'">驳回</a>';}}
-    ]};
-  $.table.init(ops);
+    ]});
 });
 $(document).on('click','.approve-btn',function(){var cno=$(this).data('cno');$.modal.confirm("确认通过？",function(){$.post(ctx+'admin/audit/approve',{cno:cno},function(r){if(r.code==0)$.table.refresh();});});});
-$(document).on('click','.reject-btn',function(){var cno=$(this).data('cno');$.modal.prompt("驳回理由",function(reason){$.post(ctx+'admin/audit/reject',{cno:cno,reason:reason},function(r){if(r.code==0)$.table.refresh();});});});
+$(document).on('click','.reject-btn',function(){var cno=$(this).data('cno');layer.prompt({title:'请输入驳回理由',formType:2},function(reason,idx){layer.close(idx);$.post(ctx+'admin/audit/reject',{cno:cno,reason:reason},function(r){if(r.code==0)$.table.refresh();});});});
 </script></body></html>

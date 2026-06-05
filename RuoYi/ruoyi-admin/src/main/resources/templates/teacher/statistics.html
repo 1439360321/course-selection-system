@@ -11,7 +11,7 @@
 </div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
-var tno = new URLSearchParams(window.location.search).get("tno") || "";
+var tno = [[${tno}]];
 $(function() {
     var options = {
         url: ctx + "teacher/statistics/list",

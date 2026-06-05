@@ -1,11 +1,11 @@
 <!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head><th:block th:include="include :: header('学生评价')" /></head>
 <body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12 select-table table-striped">
-<table id="eval-table"></table></div></div></div>
+<table id="bootstrap-table"></table></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">var ctx=[[@{/}]];
 $(function(){
-  $.table.init({url:ctx+"teacher/evaluation/list",search:false,modalName:"评价统计",
+  $.table.init({url:ctx+"teacher/evaluation/list",createUrl:undefined,updateUrl:undefined,removeUrl:undefined,modalName:"评价统计",
     columns:[{field:"cname",title:"课程"},{field:"avgRating",title:"平均评分",formatter:function(v){var s='';var n=Math.round(v||0);for(var i=0;i<n;i++)s+='★';return s+(v?v.toFixed(1):'');}},
       {field:"evalCount",title:"评价人数"},{field:"recentComments",title:"近期评价"}]});
 });

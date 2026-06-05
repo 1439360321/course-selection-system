@@ -12,7 +12,7 @@
 </div></div></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
-var tno = [[${param.tno != null ? param.tno : 'T2021001'}]];
+var tno = [[${tno}]];
 $(function() {
     $.ajax({url: ctx + "teacher/info", type: "post", data: {tno: tno}, success: function(r) {
         if (r.code == 0 && r.data) { var d = r.data; $("#info-box").html("<p>教师号："+d.tno+"</p><p>姓名："+d.tname+"</p><p>职称："+(d.rank||'')+"</p>"); }

@@ -1,11 +1,11 @@
 <!DOCTYPE html><html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head><th:block th:include="include :: header('课程公告')" /></head>
 <body class="gray-bg"><div class="container-div"><div class="row"><div class="col-sm-12 select-table table-striped">
-<table id="notice-table"></table></div></div></div>
+<table id="bootstrap-table"></table></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">var ctx=[[@{/}]];
 $(function(){
-  $.table.init({url:ctx+"student/notice/list",search:false,modalName:"公告",
+  $.table.init({url:ctx+"student/notice/list",createUrl:undefined,updateUrl:undefined,removeUrl:undefined,modalName:"公告",
     columns:[{field:"title",title:"标题"},{field:"cname",title:"课程"},{field:"content",title:"内容"},{field:"createTime",title:"发布时间"}]});
 });
 </script></body></html>

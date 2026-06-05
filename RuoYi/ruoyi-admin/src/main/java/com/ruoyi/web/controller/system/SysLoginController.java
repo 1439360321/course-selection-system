@@ -15,11 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.entity.SysRole;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.ServletUtils;
-import com.ruoyi.common.utils.ShiroUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.web.service.ConfigService;
 
@@ -73,25 +70,7 @@ public class SysLoginController extends BaseController
         try
         {
             subject.login(token);
-            SysUser user = ShiroUtils.getSysUser();
-            String homeUrl = "index";
-            if (user != null && user.getRoles() != null)
-            {
-                for (SysRole role : user.getRoles())
-                {
-                    if ("teacher".equals(role.getRoleKey()))
-                    {
-                        homeUrl = "teacher/index?tno=" + user.getLoginName();
-                        break;
-                    }
-                    else if ("student".equals(role.getRoleKey()))
-                    {
-                        homeUrl = "student/index?sno=" + user.getLoginName();
-                        break;
-                    }
-                }
-            }
-            return success().put("homeUrl", homeUrl);
+            return success().put("homeUrl", "index");
         }
         catch (AuthenticationException e)
         {

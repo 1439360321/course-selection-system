@@ -4,7 +4,7 @@
 <body class="gray-bg"><div class="container-div"><div id="gpa-section" style="text-align:right;font-size:20px;font-weight:bold;color:#e7505a;margin-bottom:10px;background:#f9f9f9;padding:8px 15px;border-radius:4px;"></div><div class="row"><div class="col-sm-12 select-table table-striped"><table id="bootstrap-table"></table></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
-var sno = new URLSearchParams(window.location.search).get("sno") || "2021001001";
+var sno = [[${sno}]];
 $(function() {
     var options = {
         url: ctx + "student/grade/list",

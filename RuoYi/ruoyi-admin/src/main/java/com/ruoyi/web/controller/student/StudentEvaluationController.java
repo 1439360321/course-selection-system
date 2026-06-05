@@ -20,6 +20,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.ShiroUtils;
 import com.ruoyi.system.domain.CourseEvaluation;
 import com.ruoyi.system.domain.CourseSelection;
+import com.ruoyi.system.service.IClassService;
 import com.ruoyi.system.service.ICourseEvaluationService;
 import com.ruoyi.system.service.ICourseSelectionService;
 import com.ruoyi.system.service.ICourseService;
@@ -37,6 +38,9 @@ public class StudentEvaluationController extends BaseController
     @Autowired
     private ICourseService courseService;
 
+    @Autowired
+    private IClassService classService;
+
     @GetMapping()
     @RequiresRoles("student")
     public String evaluation()
@@ -50,21 +54,40 @@ public class StudentEvaluationController extends BaseController
     public TableDataInfo list()
     {
         String sno = ShiroUtils.getLoginName();
+        // query evaluations already submitted
+        CourseEvaluation query = new CourseEvaluation();
+        query.setSno(sno);
+        List<CourseEvaluation> evals = courseEvaluationService.selectEvaluationList(query);
+        List<Map<String, Object>> result = new ArrayList<>();
+        java.util.Set<String> evalCnos = new java.util.HashSet<>();
+        for (CourseEvaluation e : evals)
+        {
+            Map<String, Object> row = new HashMap<>();
+            row.put("cno", e.getCno());
+            row.put("cname", e.getCname());
+            row.put("semester", e.getSemester());
+            row.put("rating", e.getRating());
+            row.put("comment", e.getComment());
+            row.put("createTime", e.getCreateTime());
+            row.put("evaluated", true);
+            result.add(row);
+            evalCnos.add(e.getCno());
+        }
+        // also show selected courses not yet evaluated
         CourseSelection cs = new CourseSelection();
         cs.setSno(sno);
         List<CourseSelection> selections = courseSelectionService.selectCourseSelectionList(cs);
-
-        List<Map<String, Object>> result = new ArrayList<>();
         for (CourseSelection item : selections)
         {
-            Map<String, Object> row = new HashMap<>();
-            row.put("cno", item.getCno());
-            row.put("cname", item.getCname());
-            row.put("semester", item.getSemester());
-            boolean evaluated = courseEvaluationService.checkExists(sno, item.getCno());
-            row.put("evaluated", evaluated);
-            row.put("status", evaluated ? "已评" : "待评");
-            result.add(row);
+            if (!evalCnos.contains(item.getCno()))
+            {
+                Map<String, Object> row = new HashMap<>();
+                row.put("cno", item.getCno());
+                row.put("cname", item.getCname());
+                row.put("semester", item.getSemester());
+                row.put("evaluated", false);
+                result.add(row);
+            }
         }
         return getDataTable(result);
     }
@@ -127,6 +150,25 @@ public class StudentEvaluationController extends BaseController
         if (cs != null)
         {
             eval.setSemester(cs.getSemester());
+        }
+        // lookup tno from class assignment; fallback: use any teacher teaching this course
+        if (eval.getTno() == null) {
+            com.ruoyi.system.domain.Class query = new com.ruoyi.system.domain.Class();
+            query.setCno(eval.getCno());
+            var classList = classService.selectClassList(query);
+            if (!classList.isEmpty()) {
+                eval.setTno(classList.get(0).getTno());
+            } else {
+                // fallback: use the course's admin_id or a system default
+                var course = courseService.selectCourseById(eval.getCno());
+                if (course != null && course.getAdminId() != null) {
+                    eval.setTno(course.getAdminId());
+                }
+            }
+        }
+        // final fallback: insert fails without tno
+        if (eval.getTno() == null) {
+            return error("该课程暂无授课教师，无法评价");
         }
 
         return toAjax(courseEvaluationService.insertEvaluation(eval));

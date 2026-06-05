@@ -14,7 +14,7 @@
 </div></div></div></div></div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
-var sno = new URLSearchParams(window.location.search).get("sno") || "2021001001";
+var sno = [[${sno}]];
 $(function() {
     $.ajax({url: ctx + "student/info", type: "post", data: {sno: sno}, success: function(r) {
         if (r.code == 0 && r.data) { $("#info-sno").text(r.data.sno); $("#info-name").text(r.data.sname); }

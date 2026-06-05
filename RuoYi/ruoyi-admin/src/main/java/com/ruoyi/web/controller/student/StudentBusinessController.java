@@ -1,7 +1,5 @@
 package com.ruoyi.web.controller.student;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -10,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -19,7 +18,6 @@ import com.ruoyi.system.domain.CourseSelection;
 import com.ruoyi.system.domain.Student;
 import com.ruoyi.system.service.ICourseService;
 import com.ruoyi.system.service.ICourseSelectionService;
-import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.IStudentService;
 
 @Controller
@@ -35,14 +33,16 @@ public class StudentBusinessController extends BaseController
     private IStudentService studentService;
 
     @GetMapping("/index")
-    public String index()
+    public String index(ModelMap mmap)
     {
+        mmap.put("sno", getLoginName());
         return "student/index";
     }
 
     @GetMapping("/course")
-    public String course()
+    public String course(ModelMap mmap)
     {
+        mmap.put("sno", getLoginName());
         return "student/course/list";
     }
 
@@ -84,8 +84,9 @@ public class StudentBusinessController extends BaseController
     }
 
     @GetMapping("/course/my")
-    public String myCourse()
+    public String myCourse(ModelMap mmap)
     {
+        mmap.put("sno", getLoginName());
         return "student/course/my";
     }
 
@@ -114,8 +115,9 @@ public class StudentBusinessController extends BaseController
     }
 
     @GetMapping("/grade")
-    public String grade()
+    public String grade(ModelMap mmap)
     {
+        mmap.put("sno", getLoginName());
         return "student/grade/list";
     }
 
@@ -173,8 +175,9 @@ public class StudentBusinessController extends BaseController
     }
 
     @GetMapping("/schedule")
-    public String schedule()
+    public String schedule(ModelMap mmap)
     {
+        mmap.put("sno", getLoginName());
         return "student/schedule";
     }
 
@@ -186,6 +189,6 @@ public class StudentBusinessController extends BaseController
         return getDataTable(list);
     }
     @GetMapping("/exam")
-    public String exam() { return "student/exam"; }
+    public String exam(ModelMap mmap) { mmap.put("sno", getLoginName()); return "student/exam"; }
 
 }

@@ -44,14 +44,16 @@ public class TeacherBusinessController extends BaseController
     private ITeacherService teacherService;
 
     @GetMapping("/index")
-    public String index()
+    public String index(ModelMap mmap)
     {
+        mmap.put("tno", getLoginName());
         return "teacher/index";
     }
 
     @GetMapping("/course")
-    public String course()
+    public String course(ModelMap mmap)
     {
+        mmap.put("tno", getLoginName());
         return "teacher/course/list";
     }
 
@@ -114,14 +116,16 @@ public class TeacherBusinessController extends BaseController
     }
 
     @GetMapping("/schedule")
-    public String schedule()
+    public String schedule(ModelMap mmap)
     {
+        mmap.put("tno", getLoginName());
         return "teacher/schedule";
     }
 
     @GetMapping("/statistics")
-    public String statistics()
+    public String statistics(ModelMap mmap)
     {
+        mmap.put("tno", getLoginName());
         return "teacher/statistics";
     }
 

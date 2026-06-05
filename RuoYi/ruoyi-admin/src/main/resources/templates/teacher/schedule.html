@@ -5,7 +5,7 @@
 <div class="container-div">
     <div class="row">
         <div class="col-sm-12" style="margin-bottom:10px">
-            <a class="btn btn-primary" th:href="@{/teacher/index(tno=${param.tno})}">返回首页</a>
+            <a class="btn btn-primary" th:href="@{/teacher/index}">返回首页</a>
         </div>
         <div class="col-sm-12 select-table table-striped">
             <table id="bootstrap-table"></table>
@@ -14,7 +14,7 @@
 </div>
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
-var tno = [[${param.tno != null ? param.tno : 'T2021001'}]];
+var tno = [[${tno}]];
 $(function() {
     var options = {
         url: ctx + "teacher/course/list",
