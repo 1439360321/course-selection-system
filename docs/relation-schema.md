@@ -28,17 +28,18 @@
 
 ## 5. 课程 (Course)
 
-> 课程(**课程号**, 课程名, 学分, 学时, 课程类型, 最大容量, 审核状态, 驳回理由, 院系编号, 管理员工号)
+> 课程(**课程号**, 课程名, 学分, 学时, 课程类型, 最大容量, 审核状态, 驳回理由, 院系编号, 申请人ID)
 >
-> `course(**cno** CHAR(8), cname VARCHAR, credit DECIMAL(3,1), hours INT, course_type TINYINT CHECK(0,1), max_students INT, status TINYINT(0=待审/1=通过/2=驳回), reject_reason VARCHAR(500), dept_id INT, admin_id CHAR(8))`
-> FK: dept_id → department, admin_id → admin
+> `course(**cno** CHAR(8), cname VARCHAR, credit DECIMAL(3,1), hours INT, course_type TINYINT CHECK(0,1), max_students INT(默认60), status TINYINT(0=待审/1=通过/2=驳回,默认1), reject_reason VARCHAR(500), dept_id INT, admin_id CHAR(8))`
+> FK: dept_id → department
+> 注: admin_id 外键已移除，教师提交开课申请时填入教师工号，管理员审核通过后填入管理员工号
 
 ## 6. 授课 (Class)
 
-> 授课(**师资号, 课程号**, 学期, 上课时间, 考试时间, 管理员工号)
+> 授课(**教师工号, 课程号**, 学期, 上课时间, 考试时间, 管理员工号)
 >
 > `class(**tno** CHAR(8), **cno** CHAR(8), semester VARCHAR, class_time VARCHAR, exam_time VARCHAR, admin_id CHAR(8))`
-> PK: (tno, cno), FK: tno → teacher, cno → course, admin_id → admin
+> PK: (tno, cno), FK: tno → teacher, cno → course
 
 ## 7. 选课 (CourseSelection)
 
